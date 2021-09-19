@@ -13,7 +13,8 @@ cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
 var cvsSel=document.createElement('select');
  document.body.insertAdjacentElement('beforeend', cvsSct);
  cvsSct.insertAdjacentElement('beforebegin', cvsSel);
- cvsSel.style.cssText='background-color: buttonface;';
+ cvsSel.style.setProperty( 'display', 'flex', 'important' );
+ cvsSel.style.setProperty( 'background-color', 'buttonface', 'important' );
 
    var colNames = ['Show nothing','Show unsorted images','greyscale','red','orange/brown','yellow','chartreuse/lime','green','spring green','cyan','azure/sky blue','blue','violet/purple','magenta/pink','reddish pink','all pink','cyan to blue','chartreuse/lime + green','red + pinks'];
 
