@@ -2,24 +2,19 @@ let srcs=[];
 let canvasses=[];
 let cols=[];
 let g_ix=0;
+var blacklist='';
+var isBl='';
 
-function sortByCol(arr, colIndex){
-    arr.sort(sortFunction)
-    function sortFunction(a, b) {
-        a = a[colIndex]
-        b = b[colIndex]
-        return (a === b) ? 0 : (a < b) ? -1 : 1
-    }
-}
 
-let cvsSct=document.createElement('section');
+var cvsSct=document.createElement('section');
 cvsSct.style.setProperty( 'display', 'none', 'important' );
 cvsSct.style.setProperty( 'flex-flow', 'wrap', 'important' );
 cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
-let cvsSel=document.createElement('select');
+var cvsSel=document.createElement('select');
  document.body.insertAdjacentElement('beforeend', cvsSct);
  cvsSct.insertAdjacentElement('beforebegin', cvsSel);
  cvsSel.style.cssText='background-color: buttonface;';
+
    var colNames = ['Show nothing','Show unsorted images','greyscale','red','orange/brown','yellow','chartreuse/lime','green','spring green','cyan','azure/sky blue','blue','violet/purple','magenta/pink','reddish pink','all pink','cyan to blue','chartreuse/lime + green','red + pinks'];
 
   // Loop through voices and create an option for each one
@@ -31,8 +26,7 @@ let cvsSel=document.createElement('select');
 
     cvsSel.appendChild(opt);
   });
- 
- 
+
  cvsSel.oninput=function(){
 	 if(cvsSel.selectedIndex==0){
 		 cvsSct.style.setProperty( 'display', 'none', 'important' );
@@ -52,7 +46,166 @@ let cvsSel=document.createElement('select');
 
  }
  }
+  
+
+
+function sortByCol(arr, colIndex){
+    arr.sort(sortFunction)
+    function sortFunction(a, b) {
+        a = a[colIndex]
+        b = b[colIndex]
+        return (a === b) ? 0 : (a < b) ? -1 : 1
+    }
+}
+
+function removeEls(d, array){
+	var newArray = [];
+	for (let i = 0; i < array.length; i++)
+	{
+		if (array[i] != d)
+		{
+			newArray.push(array[i]);
+		}
+	}
+	return newArray;
+}
+
+function findIndexTotalInsens(string, substring, index) {
+    string = string.toLocaleLowerCase();
+    substring = substring.toLocaleLowerCase();
+    for (let i = 0; i < string.length ; i++) {
+        if ((string.includes(substring, i)) && (!(string.includes(substring, i + 1)))) {
+            index.push(i);
+            break;
+        }
+    }
+    return index;
+}
+
+function blacklistMatch(array, t) {
+    var found = false;
+	var blSite='';
+    if (!((array.length == 1 && array[0] == "") || (array.length == 0))) {
+        ts = t.toLocaleLowerCase();
+        for (var i = 0; i < array.length; i++) {
+            let spl = array[i].split('*');
+            spl = removeEls("", spl);
+
+            var spl_mt = [];
+            for (let k = 0; k < spl.length; k++) {
+                var spl_m = [];
+                findIndexTotalInsens(ts, spl[k], spl_m);
+
+                spl_mt.push(spl_m);
+
+
+            }
+
+            found = true;
+
+            if ((spl_mt.length == 1) && (typeof spl_mt[0][0] === "undefined")) {
+                found = false;
+            } else if (!((spl_mt.length == 1) && (typeof spl_mt[0][0] !== "undefined"))) {
+
+                for (let m = 0; m < spl_mt.length - 1; m++) {
+
+                    if ((typeof spl_mt[m][0] === "undefined") || (typeof spl_mt[m + 1][0] === "undefined")) {
+                        found = false;
+                        m = spl_mt.length - 2; //EARLY TERMINATE
+                    } else if (!(spl_mt[m + 1][0] > spl_mt[m][0])) {
+                        found = false;
+                    }
+                }
+
+            }
+            blSite = (found) ? array[i] : blSite;
+            i = (found) ? array.length - 1 : i;
+        }
+    }
+    //console.log(found);
+    return [found,blSite];
+
+}
+
+var isCurrentSiteBlacklisted = function()
+{
+		return blacklistMatch(blacklist, window.location.href);
+};
+
+function restore_options()
+{
+	if(typeof chrome.storage==='undefined'){
+		restore_options();
+	}else{
+	chrome.storage.sync.get(null, function(items)
+	{
+		if (Object.keys(items).length != 0)
+		{
+			//console.log(items);
+		
+		if(!!items.bList && typeof  items.bList!=='undefined'){
+			blacklist=items.bList.split('\n').join('').split(',');
+		}
+		
+		var isBl=isCurrentSiteBlacklisted();
+			if(!isBl[0]){
+			checker();
+			
+		if(typeof observer ==="undefined" && typeof timer ==="undefined" ){
+			var timer;
+		const observer = new MutationObserver((mutations) =>
+		{
+			if (timer)
+			{
+				clearTimeout(timer);
+			}
+			timer = setTimeout(() =>
+			{
+				checker(null);
+			}, 150);
+		});
+
+
+		observer.observe(document,
+		{
+			attributes: true,
+			childList: true,
+			subtree: true
+		});
+	}
+
+			}else{
+				console.log('Current site shows images by default ("'+isBl[1]+'")' );
+				cvsSel.selectedIndex=1;
+				cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
  
+			}
+		}
+		else
+		{
+
+			save_options();
+			restore_options();
+		}
+	});
+	}
+}
+
+function save_options()
+{
+		chrome.storage.sync.clear(function() {
+	chrome.storage.sync.set(
+	{
+		bList: ""
+	}, function()
+	{
+		console.log('Default options saved.');
+		restore_options();
+	});
+		});
+
+}
+
 function elRemover(el){
 	if(typeof el!=='undefined' && !!el){
 	if(typeof el.parentNode!=='undefined' && !!el.parentNode){
@@ -214,32 +367,11 @@ if(url!=null && !srcs.includes(url)){
 	
 	
 }
-
-		if(typeof observer ==="undefined" && typeof timer ==="undefined" ){
-			var timer;
-		const observer = new MutationObserver((mutations) =>
-		{
-			if (timer)
-			{
-				clearTimeout(timer);
-			}
-			timer = setTimeout(() =>
-			{
-				checker(null);
-			}, 150);
-		});
-
-
-		observer.observe(document,
-		{
-			attributes: true,
-			childList: true,
-			subtree: true
-		});
-	}
 	
 chrome.runtime.onMessage.addListener(gotMessage);
 function gotMessage(message, sender, sendResponse) {
 	checker(message.imgSrc);
 }
+
+restore_options();
 	
