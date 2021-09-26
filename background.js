@@ -1,6 +1,6 @@
+try {
 var addrs=[];
 
-try {
 function doneAddr(responseDetails) {
 	let filt=addrs.filter((adr)=>{return adr.url==responseDetails.url;});
 	if(filt.length==0){
