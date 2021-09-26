@@ -35,7 +35,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 });
 
 function sendImg(requestDetails) {
-	let filt=addrs.filter((adr)=>{return (adr.tabId==requestDetails.tabId && adr.url==requestDetails.url && adr.frameId==requestDetails.frameId);});
+	let filt=addrs.filter((adr)=>{return (adr.tabId==requestDetails.tabId && adr.url==requestDetails.url);});
 	if(filt.length==0){
 		chrome.tabs.sendMessage(requestDetails.tabId, {imgSrc: requestDetails.url});
 		addrs.push(requestDetails);
