@@ -1,12 +1,12 @@
 try {
 var addrs=[];
 
-function doneAddr(responseDetails) {
+/*function doneAddr(responseDetails) {
 	let filt=addrs.filter((adr)=>{return (adr.url==responseDetails.url  && adr.tabId==responseDetails.tabId);});
 	if(filt.length==0){
 		addrs.push(responseDetails);
 	}
-}
+}*/
 
 chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
 	for (let i = 0, len = addrs.length; i<len; i++){
@@ -18,15 +18,27 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 		if (!!changeInfo.url) {
-			let filt=addrs.filter((adr)=>{return adr.tabId!=tabId;});
+			var filt=addrs.filter((adr)=>{return adr.tabId!=tabId;});
 			addrs=filt;
+			
+			chrome.tabs.query({}, function(tabs) {
+				if (!chrome.runtime.lastError) {
+				let tbs=[];
+					for (let t = 0; t < tabs.length; t++) {
+					tbs.push(tabs[t].id);
+					}
+				filt=addrs.filter((adr)=>{return tbs.includes(adr.tabId);});
+				addrs=filt;
+				}
+			});
 		}
 });
 
 function sendImg(requestDetails) {
-		let filt=addrs.filter((adr)=>{return (adr.url==requestDetails.url && adr.tabId==requestDetails.tabId);});
-	if(filt.length>0){
+	let filt=addrs.filter((adr)=>{return (adr.tabId==requestDetails.tabId && adr.url==requestDetails.url && adr.frameId==requestDetails.frameId);});
+	if(filt.length==0){
 		chrome.tabs.sendMessage(requestDetails.tabId, {imgSrc: requestDetails.url});
+		addrs.push(requestDetails);
 	}
 }
 
@@ -36,11 +48,11 @@ chrome.webRequest.onBeforeRequest.addListener(
   ["blocking","requestBody", "extraHeaders"]
 );
 
-chrome.webRequest.onCompleted.addListener(
+/*chrome.webRequest.onCompleted.addListener(
   doneAddr,
   {urls:["<all_urls>"], types:["image"]},
   ["responseHeaders"]
-);
+);*/
 
 } catch (e) {
   console.error(e);
