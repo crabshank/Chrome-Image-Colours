@@ -150,7 +150,7 @@ function restore_options()
 		
 		var isBl=isCurrentSiteBlacklisted();
 			if(!isBl[0]){
-			checker();
+			checker(null);
 			
 		if(typeof observer ==="undefined" && typeof timer ==="undefined" ){
 			var timer;
