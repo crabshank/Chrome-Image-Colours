@@ -84,7 +84,7 @@ var saver =function(){
 			});
 			
 }else{
-	alert('Blacklist textarea contents invalid!');
+	alert('Whitelist textarea contents invalid!');
 }
 	 }
  
