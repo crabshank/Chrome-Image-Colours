@@ -1,12 +1,11 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Image colours",
-  "version": "2021.9",
+  "version": "2021.10",
   "options_page":  "options.html",
-    "background": {
-    "persistent": true,
-    "scripts": ["background.js"]
-},
+   "background": {
+     "service_worker": "background.js"
+  },
   "content_scripts": [
     {
 	      "all_frames": true,
@@ -16,8 +15,17 @@
       "js": ["content.js"]
     }
   ],
-  "permissions": ["tabs","activeTab","storage","webRequest","webRequestBlocking","<all_urls>"],
-  "browser_action": {
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "permissions": ["tabs","activeTab","storage","declarativeNetRequest","declarativeNetRequestFeedback"],
+  "action": {
     "default_icon": "icon.png",
     "default_title": "Image colours"
   },
