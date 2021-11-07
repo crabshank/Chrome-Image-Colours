@@ -31,7 +31,7 @@ var cvsSel=document.createElement('select');
  cvsSel.oninput=function(){
 	 if(cvsSel.selectedIndex==0){
 		 cvsSct.style.setProperty( 'display', 'none', 'important' );
-	 }else if(cvsSel.selectedIndex==1){
+	 }else if(cvsSel.selectedIndex>=1){
 		 cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
 	 }
 	 
