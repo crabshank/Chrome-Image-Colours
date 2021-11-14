@@ -224,7 +224,6 @@ function drawImageFromWebUrl(url, canvas, OG_img){
 				canvas.height = OG_img.height;
 			   ctx.drawImage(OG_img, 0, 0, OG_img.width, OG_img.height);
 		  cvsSct.appendChild(canvas);	
-		  
 		  getColours(canvas,ctx,url,OG_img);
       });
 
@@ -308,7 +307,13 @@ srcs.push(url);
 canvasses.push([canvas,ctx,OG_img,g_ix]);
 g_ix++;
 cols.push(discr);
-canvas.onmouseup=(event)=>{
+	
+canvas.addEventListener('contextmenu', ()=>{	
+			  console.log(url);
+			  alert(url);
+});
+
+canvas.onclick=(event)=>{
 			event.target.style.setProperty( 'outline-color', 'red', 'important' );
 			event.target.style.setProperty( 'outline-style', 'auto', 'important' );
 			event.target.style.setProperty( 'outline-width', '0.3ch', 'important' );
@@ -316,7 +321,7 @@ canvas.onmouseup=(event)=>{
 			OG_img.style.setProperty( 'outline-style', 'auto', 'important' );
 			OG_img.style.setProperty( 'outline-width', '0.3ch', 'important' );
 			OG_img.scrollIntoView();
-}
+};
 //return discr;
 }catch(e){
 	elRemover(canvas);
