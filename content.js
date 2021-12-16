@@ -40,7 +40,7 @@ var cvsSel=document.createElement('select');
  }else if(cvsSel.selectedIndex==1){
 	 sortByArrCols(cols,[18,19]);
  }
-	 for (let j = 0;j <canvasses.length; j++){
+	 for (let j = 0; j<canvasses.length; j++){
 		 let el= canvasses[cols[j][17]];
 			el[0].style.setProperty( 'order', j, 'important' );
 		 
