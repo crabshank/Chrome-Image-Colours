@@ -35,28 +35,42 @@ var cvsSel=document.createElement('select');
 		 cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
 	 }
 	 
-	 let ix=cvsSel.selectedIndex-2;
-	 if (ix>=0){
-	 sortByCol(cols, ix);
-	 cols.reverse();
+	 if (cvsSel.selectedIndex>=2){
+		   	 sortByCol(cols, cvsSel.selectedIndex-2);
+ }else if(cvsSel.selectedIndex==1){
+	 sortByArrCols(cols,[18,19]);
+ }
 	 for (let j = 0;j <canvasses.length; j++){
 		 let el= canvasses[cols[j][17]];
 			el[0].style.setProperty( 'order', j, 'important' );
 		 
 	 }
-
- }
  }
   
 
 
 function sortByCol(arr, colIndex){
-    arr.sort(sortFunction)
+    arr.sort(sortFunction);
     function sortFunction(a, b) {
         a = a[colIndex]
         b = b[colIndex]
-        return (a === b) ? 0 : (a < b) ? -1 : 1
+        return (a === b) ? 0 : (a < b) ? 1 : -1
     }
+}
+
+function sortByArrCols(arr, colsArr){
+    arr.sort(sortFunction);
+		function sortFunction(a, b) {
+			for(let i = 0; i < arr.length; i++){
+					if(a[colsArr[i]]>b[colsArr[i]]){
+						return 1;
+					}else if(a[colsArr[i]]<b[colsArr[i]]){
+						return -1;
+					}else if(i==arr.length-1){
+					return 0;
+				}
+			} 
+	}
 }
 
 function removeEls(d, array){
@@ -282,7 +296,7 @@ if((hue>=3525)||(((hue>=0) && (hue<75)))){
 
 function getColours(canvas,ctx,url,OG_img){
 try{
-var discr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,g_ix];
+var discr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,g_ix,OG_img.getBoundingClientRect().top,OG_img.getBoundingClientRect().left];
 
 var colour_data=ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height).data;
 var pxCnt=0;
