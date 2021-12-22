@@ -230,20 +230,25 @@ function elRemover(el){
 }
 
 function drawImageFromWebUrl(url, canvas, OG_img){
+
       var img = new Image();
 
-      img.addEventListener("load", function () {
+      img.addEventListener("load", function () {	
+	  if(!srcs.includes(url)){
 		   let ctx=canvas.getContext("2d");
 			   canvas.width  = OG_img.width;
 				canvas.height = OG_img.height;
 			   ctx.drawImage(OG_img, 0, 0, OG_img.width, OG_img.height);
 		  cvsSct.appendChild(canvas);	
+		  				srcs.push(url);
 		  getColours(canvas,ctx,url,OG_img);
+	  }else{
+		  elRemover(this);
+	  }
       });
 
       img.setAttribute("src", url);
 	  
-
 }
 
 function getDiscCol(r, g, b) {
@@ -363,14 +368,13 @@ function checker(url){
 
 var DOMimgs=[...document.getElementsByTagName('IMG')];
 
-if(url!=null && !srcs.includes(url)){
+if(url!=null){
 			try{
 				var img = new Image();
 				img.addEventListener("load", function () {
 				document.getElementsByTagName('HEAD')[0].appendChild(img);
 				DOMimgs.push(img);
 				startDraw(DOMimgs);
-				srcs.push(url);
 			  });
 
 			  img.setAttribute("src", url);
