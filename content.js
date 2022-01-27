@@ -16,7 +16,7 @@ var cvsSel=document.createElement('select');
  cvsSel.style.setProperty( 'display', 'flex', 'important' );
  cvsSel.style.setProperty( 'background-color', 'buttonface', 'important' );
 
-   var colNames = ['Show nothing','Show unsorted images','greyscale','red','orange/brown','yellow','chartreuse/lime','green','spring green','cyan','azure/sky blue','blue','violet/purple','magenta/pink','reddish pink','all pink','cyan to blue','chartreuse/lime + green','red + pinks'];
+   var colNames = ['','Show unsorted images','greyscale','red','orange/brown','yellow','chartreuse/lime','green','spring green','cyan','azure/sky blue','blue','violet/purple','magenta/pink','reddish pink','all pink','cyan to blue','chartreuse/lime + green','red + pinks'];
 
   // Loop through voices and create an option for each one
   colNames.forEach(name => {
