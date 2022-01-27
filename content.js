@@ -11,6 +11,7 @@ cvsSct.style.setProperty( 'display', 'none', 'important' );
 cvsSct.style.setProperty( 'flex-flow', 'wrap', 'important' );
 cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
 var cvsSel=document.createElement('select');
+cvsSel.title='Select colour to sort by';
  document.body.insertAdjacentElement('beforeend', cvsSct);
  cvsSct.insertAdjacentElement('beforebegin', cvsSel);
  cvsSel.style.setProperty( 'display', 'flex', 'important' );
