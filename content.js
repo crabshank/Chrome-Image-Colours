@@ -12,12 +12,15 @@ cvsSct.style.setProperty( 'flex-flow', 'wrap', 'important' );
 cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
 var cvsSel=document.createElement('select');
 cvsSel.title='Select colour to sort by';
- document.body.insertAdjacentElement('beforeend', cvsSct);
- cvsSct.insertAdjacentElement('beforebegin', cvsSel);
- cvsSel.style.setProperty( 'display', 'flex', 'important' );
- cvsSel.style.setProperty( 'background-color', 'buttonface', 'important' );
+document.body.insertAdjacentElement('beforeend', cvsSct);
+cvsSct.insertAdjacentElement('beforebegin', cvsSel);
+cvsSel.style.setProperty( 'display', 'flex', 'important' );
+cvsSel.style.setProperty( 'background-color', 'buttonface', 'important' );
+cvsSel.style.setProperty( 'user-select', 'none', 'important' );
+cvsSel.style.setProperty( '-webkit-user-select', 'none', 'important' );
+cvsSel.style.setProperty( '-webkit-touch-callout', 'none', 'important' );
 
-   var colNames = ['','Show unsorted images','greyscale','red','orange/brown','yellow','chartreuse/lime','green','spring green','cyan','azure/sky blue','blue','violet/purple','magenta/pink','reddish pink','all pink','cyan to blue','chartreuse/lime + green','red + pinks'];
+   var colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks'];
 
   // Loop through voices and create an option for each one
   colNames.forEach(name => {
