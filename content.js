@@ -337,14 +337,14 @@ canvas.addEventListener('contextmenu', ()=>{
 });
 
 canvas.onclick=(event)=>{
-			event.target.style.setProperty( 'outline-color', 'red', 'important' );
-			event.target.style.setProperty( 'outline-style', 'auto', 'important' );
-			event.target.style.setProperty( 'outline-width', '0.3ch', 'important' );
-			OG_img.style.setProperty( 'outline-color', 'red', 'important' );
-			OG_img.style.setProperty( 'outline-style', 'auto', 'important' );
-			OG_img.style.setProperty( 'outline-width', '0.3ch', 'important' );
-			OG_img.scrollIntoView();
+				event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
+				chrome.runtime.sendMessage({message: "hl",url: url}, function(response) {});
+			try{
+				OG_img.style.setProperty( 'border', 'red 0.3ch outset', 'important' );;
+				OG_img.scrollIntoView();
+			}catch(e){;}
 };
+
 //return discr;
 }catch(e){
 	elRemover(canvas);
@@ -368,37 +368,47 @@ function startDraw(DOMimgs){
 	}
 }
 
-function checker(url){
+function checker(url, msg){
 
 var DOMimgs=[...document.getElementsByTagName('IMG')];
 
 if(url!=null){
-			try{
-				var img = new Image();
-				img.addEventListener("load", function () {
-				document.getElementsByTagName('HEAD')[0].appendChild(img);
-				DOMimgs.push(img);
-				startDraw(DOMimgs);
-			  });
+		if(msg=="detect"){
+				try{
+					var img = new Image();
+					img.addEventListener("load", function () {
+					document.getElementsByTagName('HEAD')[0].appendChild(img);
+					DOMimgs.push(img);
+					startDraw(DOMimgs);
+				  });
 
-			  img.setAttribute("src", url);
-			//  img.setAttribute("addedImg", true);
+				  img.setAttribute("src", url);
+				//  img.setAttribute("addedImg", true);
 
-			}catch(e){
-				startDraw(DOMimgs);
-			}
-	}else{
-		startDraw(DOMimgs);
-	}
-	
-
-	
+				}catch(e){
+					startDraw(DOMimgs);
+				}
+		}else if(msg=="hl"){
+				try{
+					let OG_img=DOMimgs.filter((i)=>{return i.src===url;});
+					let OG_img_len=OG_img.length;
+					if(OG_img_len>0){
+						OG_img[0].scrollIntoView();
+						for (let i=OG_img_len-1; i>=0; i--){
+							OG_img[i].style.setProperty(  'border', 'red 0.3ch outset', 'important' );
+						}
+					}
+				}catch(e){;}
+		}
+}else{
+	startDraw(DOMimgs);
+}
 	
 }
 	
 chrome.runtime.onMessage.addListener(gotMessage);
 function gotMessage(message, sender, sendResponse) {
-	checker(message.imgSrc);
+	checker(message.imgSrc, message.message);
 }
 
 restore_options();
