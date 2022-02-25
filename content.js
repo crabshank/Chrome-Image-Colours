@@ -42,17 +42,15 @@ cvsSel.style.setProperty( '-webkit-touch-callout', 'none', 'important' );
 	 if (cvsSel.selectedIndex>=2){
 		   	 sortByCol(cols, cvsSel.selectedIndex-2);
  }else if(cvsSel.selectedIndex==1){
-	 sortByArrCols(cols,[18,19]);
+	 sortByArrCols(cols,[18,19],[-1,-1]);
  }
 	 for (let j = 0; j<canvasses.length; j++){
 		 let el= canvasses[cols[j][17]];
 			el[0].style.setProperty( 'order', j, 'important' );
 		 
 	 }
- }
+}
   
-
-
 function sortByCol(arr, colIndex){
     arr.sort(sortFunction);
     function sortFunction(a, b) {
@@ -62,14 +60,14 @@ function sortByCol(arr, colIndex){
     }
 }
 
-function sortByArrCols(arr, colsArr){
+function sortByArrCols(arr, colsArr, dir){
     arr.sort(sortFunction);
 		function sortFunction(a, b) {
 			for(let i = 0; i < arr.length; i++){
 					if(a[colsArr[i]]>b[colsArr[i]]){
-						return 1;
+						return dir[i]*-1;
 					}else if(a[colsArr[i]]<b[colsArr[i]]){
-						return -1;
+						return dir[i]*1;
 					}else if(i==arr.length-1){
 					return 0;
 				}
