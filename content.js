@@ -192,7 +192,7 @@ function restore_options()
 	}
 
 			}else{
-				console.log('Current site shows images by default ("'+isBl[1]+'")' );
+				console.log('Image colours - Current site shows images by default ("'+isBl[1]+'")' );
 				cvsSel.selectedIndex=1;
 				cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
  
