@@ -105,9 +105,7 @@ blklst.style.height = (blklst.scrollHeight+7)+"px";
 		}
 		else
 		{
-
 			save_options();
-			restore_options();
 		}
 	});
 	}
@@ -119,7 +117,9 @@ function save_options()
 	chrome.storage.sync.set(
 	{
 		bList: ""
-	}, function(){});
+	}, function(){
+		restore_options();
+	});
 		});
 }
 
