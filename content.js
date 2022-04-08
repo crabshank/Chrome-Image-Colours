@@ -423,9 +423,7 @@ canvas.onclick=(event)=>{
 };
 
 //return discr;
-}catch(e){
-	elRemover(canvas);
-}
+}catch(e){;}
 }
 
 
