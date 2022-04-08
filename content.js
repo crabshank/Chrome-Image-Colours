@@ -5,6 +5,83 @@ let g_ix=0;
 var blacklist='';
 var isBl='';
 
+function getTagNameShadow(docm, tgn){
+	var shrc=[];
+	var out=[];
+	
+		let allNodes=[...docm.querySelectorAll('*')];
+		let srCnt=0;
+		
+		while(srCnt<allNodes.length){ //1st round
+			if(!!allNodes[srCnt] && typeof allNodes[srCnt] !=='undefined' && allNodes[srCnt].tagName===tgn){
+				out.push(allNodes[srCnt]);
+			}
+			
+			if(!!allNodes[srCnt].shadowRoot && typeof allNodes[srCnt].shadowRoot !=='undefined'){
+				let c=allNodes[srCnt].shadowRoot.children;
+				shrc.push(...c);
+			}
+			srCnt++;
+		}
+		
+		srCnt=0;
+		let srCnt_l=shrc.length;
+		
+		while(srCnt<srCnt_l){ //2nd round
+			if(!!shrc[srCnt].shadowRoot && typeof shrc[srCnt].shadowRoot !=='undefined'){
+				let c=shrc[srCnt].shadowRoot.children;
+				shrc.push(...c);
+				srCnt_l+=c.length;
+			}
+			srCnt++;
+		}
+	
+	let srv=shrc.filter((c)=>{return c.tagName===tgn;});
+	out.push(...srv);
+	
+	return out;
+}
+
+function absBoundingClientRect(el){
+	let st = [window?.scrollY,
+					window?.pageYOffset,
+					el?.ownerDocument?.documentElement?.scrollTop,
+					document?.documentElement?.scrollTop,
+					document?.body?.parentNode?.scrollTop,
+					document?.body?.scrollTop,
+					document?.head?.scrollTop];
+					
+		let sl = [window?.scrollX,
+						window?.pageXOffset,
+						el?.ownerDocument?.documentElement?.scrollLeft,
+						document?.documentElement?.scrollLeft,
+						document?.body?.parentNode?.scrollLeft,
+						document?.body?.scrollLeft,
+						document?.head?.scrollLeft];
+						
+				let scrollTop=0;
+				for(let k=0; k<st.length; k++){
+					if(!!st[k] && typeof  st[k] !=='undefined' && st[k]>0){
+						scrollTop=(st[k]>scrollTop)?st[k]:scrollTop;
+					}
+				}			
+
+				let scrollLeft=0;
+				for(let k=0; k<sl.length; k++){
+					if(!!sl[k] && typeof  sl[k] !=='undefined' && sl[k]>0){
+						scrollLeft=(sl[k]>scrollLeft)?sl[k]:scrollLeft;
+					}
+				}
+	
+	let r=el.getBoundingClientRect();
+	
+	r.left+=scrollLeft;
+	r.right+=scrollLeft;
+	r.top+=scrollTop;
+	r.bottom+=scrollTop;
+	
+	return r;
+}
 
 var cvsSct=document.createElement('section');
 cvsSct.style.setProperty( 'display', 'none', 'important' );
@@ -303,7 +380,9 @@ if((hue>=3525)||(((hue>=0) && (hue<75)))){
 
 function getColours(canvas,ctx,url,OG_img){
 try{
-var discr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,g_ix,OG_img.getBoundingClientRect().top,OG_img.getBoundingClientRect().left];
+
+let iRct=absBoundingClientRect(OG_img);
+var discr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,g_ix,iRct.top,iRct.left];
 
 var colour_data=ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height).data;
 var pxCnt=0;
@@ -368,7 +447,7 @@ function startDraw(DOMimgs){
 
 function checker(url, msg){
 
-var DOMimgs=[...document.getElementsByTagName('IMG')];
+var DOMimgs=getTagNameShadow(document, 'IMG');
 
 if(url!=null){
 		if(msg=="detect"){
