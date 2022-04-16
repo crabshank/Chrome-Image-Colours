@@ -112,8 +112,9 @@ cvsSel.style.setProperty( '-webkit-user-select', 'none', 'important' );
  cvsClr.onclick=function(){
 	 cvsSct.innerHTML='';
  }
-	 cvsSel.oninput=function(){
-	 if(cvsSel.selectedIndex==0){
+ 
+ function doSort(){
+	 	 if(cvsSel.selectedIndex==0){
 		 cvsSct.style.setProperty( 'display', 'none', 'important' );
 	 }else if(cvsSel.selectedIndex>=1){
 		 cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
@@ -129,6 +130,10 @@ cvsSel.style.setProperty( '-webkit-user-select', 'none', 'important' );
 			el[0].style.setProperty( 'order', j, 'important' );
 		 
 	 }
+ }
+
+cvsSel.oninput=function(){
+	doSort();
 }
   
 function sortByCol(arr, colIndex){
@@ -428,7 +433,7 @@ canvas.onclick=(event)=>{
 			}catch(e){;}
 };
 
-//return discr;
+doSort();
 }catch(e){;}
 }
 
@@ -493,4 +498,3 @@ function gotMessage(message, sender, sendResponse) {
 }
 
 restore_options();
-	
