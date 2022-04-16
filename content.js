@@ -76,19 +76,26 @@ function absBoundingClientRect(el){
 	return r;
 }
 
+var cvsSctTop=document.createElement('section');
 var cvsSct=document.createElement('section');
+cvsSctTop.style.setProperty( 'display', 'inline-flex', 'important' );
+cvsSctTop.style.setProperty( 'align-items', 'flex-start', 'important' );
+
 cvsSct.style.setProperty( 'display', 'none', 'important' );
 cvsSct.style.setProperty( 'flex-flow', 'wrap', 'important' );
 cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
+var cvsClr=document.createElement('button');
+cvsClr.innerText='Clear canvas';
 var cvsSel=document.createElement('select');
 cvsSel.title='Select colour to sort by';
 document.body.insertAdjacentElement('beforeend', cvsSct);
-cvsSct.insertAdjacentElement('beforebegin', cvsSel);
+cvsSctTop.appendChild(cvsSel);
+cvsSctTop.appendChild(cvsClr);
+cvsSct.insertAdjacentElement('beforebegin', cvsSctTop);
 cvsSel.style.setProperty( 'display', 'flex', 'important' );
 cvsSel.style.setProperty( 'background-color', 'buttonface', 'important' );
 cvsSel.style.setProperty( 'user-select', 'none', 'important' );
 cvsSel.style.setProperty( '-webkit-user-select', 'none', 'important' );
-cvsSel.style.setProperty( '-webkit-touch-callout', 'none', 'important' );
 
    var colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks'];
 
@@ -102,7 +109,10 @@ cvsSel.style.setProperty( '-webkit-touch-callout', 'none', 'important' );
     cvsSel.appendChild(opt);
   });
 
- cvsSel.oninput=function(){
+ cvsClr.onclick=function(){
+	 cvsSct.innerHTML='';
+ }
+	 cvsSel.oninput=function(){
 	 if(cvsSel.selectedIndex==0){
 		 cvsSct.style.setProperty( 'display', 'none', 'important' );
 	 }else if(cvsSel.selectedIndex>=1){
@@ -310,6 +320,11 @@ function drawImageFromWebUrl(url, canvas, OG_img){
 				canvas.height = OG_img.height;
 			   ctx.drawImage(OG_img, 0, 0, OG_img.width, OG_img.height);
 		  cvsSct.appendChild(canvas);	
+			if(cvsSel.selectedIndex==0){
+				cvsSct.style.setProperty( 'display', 'none', 'important' );
+			}else if(cvsSel.selectedIndex>=1){
+				cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
+			}
 		  				srcs.push(url);
 		  getColours(canvas,ctx,url,OG_img);
 	  }else{
