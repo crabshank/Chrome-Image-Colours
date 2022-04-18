@@ -170,7 +170,7 @@ function absBoundingClientRect(el){
 	 	 if(cvsSel.selectedIndex==0){
 		 cvsSct.style.setProperty( 'display', 'none', 'important' );
 	 }else if(cvsSel.selectedIndex>=1){
-		 cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
+		 cvsSct.style.setProperty( 'display', 'flex', 'important' );
 	 }
 	 
 	 if (cvsSel.selectedIndex>=2){
@@ -301,7 +301,7 @@ function restore_options()
 			if(isBl[0]){
 				console.log('Image colours - Current site shows images by default ("'+isBl[1]+'")' );
 				cvsSel.selectedIndex=1;
-				cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
+				cvsSct.style.setProperty( 'display', 'flex', 'important' );
 			}
 						
 		}
