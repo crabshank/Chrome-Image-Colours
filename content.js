@@ -180,7 +180,7 @@ function absBoundingClientRect(el){
  }
 	 for (let j = 0; j<canvasses.length; j++){
 		 let el= canvasses[cols[j][17]];
-			el[0].style.setProperty( 'order', j, 'important' );
+			el[2].style.setProperty( 'order', j, 'important' );
 	 }
  }
 
@@ -341,7 +341,7 @@ function drawImageFromWebUrl(url, canvas, ctx, OG_img){
 					canvas.height = OG_img.height;
 				   ctx.drawImage(OG_img, 0, 0, OG_img.width, OG_img.height);
 			  cvsSct.appendChild(canvas);
-			  elRemover(OG_img);
+			 canvas.style.setProperty( 'display', 'none', 'important' );
 				if(cvsSel.selectedIndex==0){
 					cvsSct.style.setProperty( 'display', 'none', 'important' );
 				}else if(cvsSel.selectedIndex>=1){
@@ -424,29 +424,11 @@ discr[i]=discr[i]/pxCnt;
 
 canvasses.push([canvas,ctx,OG_img,discr]);
 	
-canvas.addEventListener('contextmenu', ()=>{
-				let u=canvas.getAttribute("source_addr");
-			  console.log(u);
-			  alert(u);
-});
-
-canvas.onclick=(event)=>{
-				event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
-				chrome.runtime.sendMessage({message: "hl",url: url, f_id:parseInt(event.target.getAttribute("from_frame"))}, function(response) {});
-			try{
-				OG_img.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
-				OG_img.scrollIntoView();
-			}catch(e){;}
-};
-
 doSort();
 }catch(e){;}
 }
 
-function startDraw(img,url,fid){
-		var WIDTH =img.width;
-		var HEIGHT = img.height;
-		if(WIDTH>0 && HEIGHT >0){
+function startDraw(img,url,fid,WIDTH, HEIGHT){
 			canvas = document.createElement('canvas');
 			canvas.setAttribute("from_frame",fid);
 			canvas.setAttribute("source_addr",url);
@@ -454,23 +436,43 @@ function startDraw(img,url,fid){
 			canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 			canvasCtx.fillStyle = 'rgb(0,0,0)';
 			drawImageFromWebUrl( url, canvas, canvasCtx, img);
-		}
 }
 
 function checker(url, msg, fid){
 			if((msg=="detect" || msg=="rqi") && fr_id==0){
-					for(let k=0, len=url.length; k<len; k++){						
+					for(let k=0, len=url.length; k<len; k++){	
+										let i_arr=[...cvsSct.getElementsByTagName('IMG')];
+										let i_arr_m=i_arr.findIndex((i)=>{return i.getAttribute('src')===url[k];});
+
+										if(i_arr_m>=0){
+											elRemover(i_arr[i_arr_m]);
+										}
+										
 						var img = new Image();
 						img.setAttribute('crossOrigin', '');
 							img.addEventListener("load", function () {
+										var WIDTH =img.width;
+										var HEIGHT = img.height;
+									if(WIDTH>0 && HEIGHT >0){
 										let c_arr=[...cvsSct.getElementsByTagName('CANVAS')];
 										let c_arr_m=c_arr.findIndex((c)=>{return c.getAttribute('source_addr')===url[k];});
 
 										if(c_arr_m>=0){
 											elRemover(c_arr[c_arr_m]);
 										}
-											document.getElementsByTagName('HEAD')[0].appendChild(img);
-											startDraw(img,url[k],fid);
+											cvsSct.appendChild(img);
+											
+											cvsSct.lastChild.onclick=(event)=>{
+												event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
+												chrome.runtime.sendMessage({message: "hl",url: url, f_id:parseInt(event.target.getAttribute("from_frame"))}, function(response) {});
+												try{
+													OG_img.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
+													OG_img.scrollIntoView();
+												}catch(e){;}
+											};
+											
+											startDraw(cvsSct.lastChild,url[k],fid,WIDTH, HEIGHT);
+									}
 							});
 
 							  img.setAttribute("from_frame", fid);
@@ -492,7 +494,7 @@ function checker(url, msg, fid){
 			}
 }
 
-function removeCanvases(fid){
+function removeCanvases(){
 	if(fr_id==0){
 		clear_out();
 	}
@@ -505,7 +507,7 @@ function gotMessage(message, sender, sendResponse) {
 	if(message.message=="rep_tb"){
 		get_ids(false);	
 	}else if(message.message=="nav"){
-		removeCanvases(message.f_id);
+		removeCanvases();
 	}else if(message.message=="rqi"){
 			checker(message.imgSrc, message.message, message.f_id);
 	}else{
