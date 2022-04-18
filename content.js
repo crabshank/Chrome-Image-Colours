@@ -474,15 +474,17 @@ function checker(url, msg, fid){
 							  img.setAttribute("from_frame", fid);
 							  img.setAttribute("src", url[k]);
 			}
-			}else if(msg=="hl" && fr_id==fid){
+			}else if(msg=="hl"){
 					try{
+						var cvi=(fr_id==0)?[...cvsSct.getElementsByTagName('IMG')]:[];
+						var all_i=getTagNameShadow(document,'IMG');
+						var cviF=all_i.filter((i)=>{return !cvi.includes(i);});
 						for(let k=0, len=url.length; k<len; k++){
-							let OG_img=getTagNameShadow(document,'IMG');
-								for (let i=0, len=OG_img.length; i<len; i++){
-									let s=(OG_img[i].src==='')?OG_img[i].currentSrc:OG_img[i].src;
+								for (let i=0, len=cviF.length; i<len; i++){
+									let s=(cviF[i].src==='')?cviF[i].currentSrc:cviF[i].src;
 									if(s===url[k]){
-										OG_img[i].scrollIntoView();
-										OG_img[i].style.setProperty(  'border', 'red 0.3ch outset', 'important' );
+										cviF[i].scrollIntoView();
+										cviF[i].style.setProperty(  'border', 'red 0.3ch outset', 'important' );
 									}
 								}
 						}

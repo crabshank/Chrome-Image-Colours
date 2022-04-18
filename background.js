@@ -3,7 +3,7 @@ var addrs=[];
 
 function sendImg(requestDetails, msg, tid,fid) {
 	if(msg=="hl"){
-		chrome.tabs.sendMessage(tid, {message: msg, imgSrc: [requestDetails], f_id: fid});
+		chrome.tabs.sendMessage(tid, {message: msg, imgSrc: requestDetails, f_id: fid});
 	}else if(msg=="detect"){
 		let filt=addrs.filter((adr)=>{return (adr.tabId==requestDetails.tabId && adr.url==requestDetails.url);});
 		if(filt.length==0){
