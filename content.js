@@ -1,5 +1,4 @@
 var chg = window.location.href;
-var srcs=[];
 var canvasses=[];
 var g_ix=0;
 var blacklist='';
@@ -15,12 +14,13 @@ var cvsSel=document.createElement('select');
 const colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks'];
 
 function clear_out(){
-	cvsSct.innerHTML='';
-	chrome.runtime.sendMessage({message: "clr"}, function(response) {});
-	canvasses=[];
-	g_ix=0;
-	to_draw=[];
-	srcs=[];
+	if(fr_id==0){
+		cvsSct.innerHTML='';
+		canvasses=[];
+		 g_ix=0;
+		to_draw=[];
+		chrome.runtime.sendMessage({message: "clr"}, function(response) {});
+	}
 }
 
 function setup(){
@@ -63,10 +63,7 @@ colNames.forEach(name => {
 cvsSel.oninput=function(){
 	if(cvsSel.selectedIndex!=0){
 		for(let i=0, len=to_draw.length; i<len; i++){
-			let src_ix=srcs.findIndex((s)=>{return s[0]===to_draw[i][0]});
-			if(src_ix<0){
 				checker(to_draw[i][0], to_draw[i][1], to_draw[i][2]);
-			}
 		}
 		to_draw=[];
 	}
@@ -169,7 +166,7 @@ function absBoundingClientRect(el){
 }
 
  function doSort(){
-	 let cols=canvasses.map((v)=>{return v[4];})
+	 let cols=canvasses.map((v)=>{return v[3];})
 	 	 if(cvsSel.selectedIndex==0){
 		 cvsSct.style.setProperty( 'display', 'none', 'important' );
 	 }else if(cvsSel.selectedIndex>=1){
@@ -184,7 +181,6 @@ function absBoundingClientRect(el){
 	 for (let j = 0; j<canvasses.length; j++){
 		 let el= canvasses[cols[j][17]];
 			el[0].style.setProperty( 'order', j, 'important' );
-		 
 	 }
  }
 
@@ -345,6 +341,7 @@ function drawImageFromWebUrl(url, canvas, ctx, OG_img){
 					canvas.height = OG_img.height;
 				   ctx.drawImage(OG_img, 0, 0, OG_img.width, OG_img.height);
 			  cvsSct.appendChild(canvas);
+			  elRemover(OG_img);
 				if(cvsSel.selectedIndex==0){
 					cvsSct.style.setProperty( 'display', 'none', 'important' );
 				}else if(cvsSel.selectedIndex>=1){
@@ -403,7 +400,7 @@ if((hue>=3525)||(((hue>=0) && (hue<75)))){
 
 function getColours(canvas,ctx,url,OG_img){
 try{
-
+g_ix=canvasses.length;
 let iRct=absBoundingClientRect(OG_img);
 var discr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,g_ix,iRct.top,iRct.left];
 
@@ -425,8 +422,7 @@ for (let i = 0; i<=16; i++){
 discr[i]=discr[i]/pxCnt;
 }
 
-canvasses.push([canvas,ctx,OG_img,g_ix,discr]);
-g_ix++;
+canvasses.push([canvas,ctx,OG_img,discr]);
 	
 canvas.addEventListener('contextmenu', ()=>{
 				let u=canvas.getAttribute("source_addr");
@@ -448,63 +444,37 @@ doSort();
 }
 
 function startDraw(img,url,fid){
-
-		canvas = document.createElement('canvas');
-		canvas.setAttribute("from_frame",fid);
-		canvas.setAttribute("source_addr",url);
-		canvasCtx = canvas.getContext("2d");
 		var WIDTH =img.width;
 		var HEIGHT = img.height;
 		if(WIDTH>0 && HEIGHT >0){
+			canvas = document.createElement('canvas');
+			canvas.setAttribute("from_frame",fid);
+			canvas.setAttribute("source_addr",url);
+			canvasCtx = canvas.getContext("2d");
 			canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 			canvasCtx.fillStyle = 'rgb(0,0,0)';
 			drawImageFromWebUrl( url, canvas, canvasCtx, img);
 		}
-
 }
 
 function checker(url, msg, fid){
-			if((msg=="detect" || msg=="rqi" || msg=="rqi2") && fr_id==0){
-					for(let k=0, len=url.length; k<len; k++){
-				let src_ix=srcs.findIndex((s)=>{return s[0]==url[k]});
-					try{
-							if(cvsSel.selectedIndex==0){
-								let ix=to_draw.findIndex((t)=>{return t[0]===url[k]});
-								if(ix==-1){
-									to_draw.push([[url[k]], msg, fid]);
-								}else if(ix>=0 && fid!=0){
-									let old_fid=to_draw[src_ix][2];			
-										let c=[...cvsSct.getElementsByTagName('CANVAS')];
-										for (let i=0, len=c.length; i<len; i++){
-											if(parseInt(c[i].getAttribute('from_frame'))==old_fid){
-												c[i].setAttribute('from_frame', fid);
-											}
-										}
-										srcs[src_ix][2]=fid;
-							}
-							}else if(src_ix<0){
-								var img = new Image();
-								img.setAttribute('crossOrigin', '');
+			if((msg=="detect" || msg=="rqi") && fr_id==0){
+					for(let k=0, len=url.length; k<len; k++){						
+						var img = new Image();
+						img.setAttribute('crossOrigin', '');
 							img.addEventListener("load", function () {
-								document.getElementsByTagName('HEAD')[0].appendChild(img);
-								srcs.push([url[k],fid]);
-								startDraw(img,url[k],fid);
+										let c_arr=[...cvsSct.getElementsByTagName('CANVAS')];
+										let c_arr_m=c_arr.findIndex((c)=>{return c.getAttribute('source_addr')===url[k];});
+
+										if(c_arr_m>=0){
+											elRemover(c_arr[c_arr_m]);
+										}
+											document.getElementsByTagName('HEAD')[0].appendChild(img);
+											startDraw(img,url[k],fid);
 							});
 
 							  img.setAttribute("from_frame", fid);
 							  img.setAttribute("src", url[k]);
-							  
-							}else if(src_ix>=0 && fid!=0){
-								let old_fid=srcs[src_ix][1];
-								let c=[...cvsSct.getElementsByTagName('CANVAS')];
-								for (let i=0, len=c.length; i<len; i++){
-									if(parseInt(c[i].getAttribute('from_frame'))==old_fid){
-										c[i].setAttribute('from_frame', fid);
-									}
-								}
-								srcs[src_ix][1]=fid;
-							}
-					}catch(e){;}
 			}
 			}else if(msg=="hl" && fr_id==fid){
 					try{
