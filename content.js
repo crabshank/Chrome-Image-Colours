@@ -18,6 +18,7 @@ function clear_out(){
 	cvsSct.innerHTML='';
 	chrome.runtime.sendMessage({message: "clr"}, function(response) {});
 	canvasses=[];
+	g_ix=0;
 	to_draw=[];
 	srcs=[];
 }
