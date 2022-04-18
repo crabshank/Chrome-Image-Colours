@@ -456,9 +456,7 @@ function checker(url, msg, fid){
 														canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 														canvasCtx.fillStyle = 'rgb(0,0,0)';
 
-													canvas.width  = img.width;
-													canvas.height = img.height;
-													canvasCtx.drawImage(img, 0, 0, img.width, img.height);
+													canvasCtx.drawImage(img, 0, 0, WIDTH,HEIGHT);
 													cvsSct.appendChild(canvas);
 													canvas.style.setProperty( 'display', 'none', 'important' );
 													
