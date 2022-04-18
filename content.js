@@ -336,20 +336,6 @@ function elRemover(el){
 	}
 }
 
-function drawImageFromWebUrl(url, canvas, ctx, OG_img){
-				   canvas.width  = OG_img.width;
-					canvas.height = OG_img.height;
-				   ctx.drawImage(OG_img, 0, 0, OG_img.width, OG_img.height);
-			  cvsSct.appendChild(canvas);
-			 canvas.style.setProperty( 'display', 'none', 'important' );
-				if(cvsSel.selectedIndex==0){
-					cvsSct.style.setProperty( 'display', 'none', 'important' );
-				}else if(cvsSel.selectedIndex>=1){
-					cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
-				}
-			  getColours(canvas,ctx,url,OG_img);
-}
-
 function getDiscCol(r, g, b) {
 let h=0;
   if (r==g && r==b) {
@@ -428,18 +414,10 @@ doSort();
 }catch(e){;}
 }
 
-function startDraw(img,url,fid,WIDTH, HEIGHT){
-			canvas = document.createElement('canvas');
-			canvas.setAttribute("from_frame",fid);
-			canvas.setAttribute("source_addr",url);
-			canvasCtx = canvas.getContext("2d");
-			canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
-			canvasCtx.fillStyle = 'rgb(0,0,0)';
-			drawImageFromWebUrl( url, canvas, canvasCtx, img);
-}
-
 function checker(url, msg, fid){
-			if((msg=="detect" || msg=="rqi") && fr_id==0){
+	if(cvsSel.selectedIndex==0){
+		to_draw.push([url, msg, fid]);
+	}else if((msg=="detect" || msg=="rqi") && fr_id==0 && cvsSel.selectedIndex>=1){
 					for(let k=0, len=url.length; k<len; k++){	
 										let i_arr=[...cvsSct.getElementsByTagName('IMG')];
 										let i_arr_m=i_arr.findIndex((i)=>{return i.getAttribute('src')===url[k];});
@@ -462,7 +440,7 @@ function checker(url, msg, fid){
 										}
 											cvsSct.appendChild(img);
 											
-											cvsSct.lastChild.onclick=(event)=>{
+											img.onclick=(event)=>{
 												event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
 												chrome.runtime.sendMessage({message: "hl",url: url, f_id:parseInt(event.target.getAttribute("from_frame"))}, function(response) {});
 												try{
@@ -471,7 +449,27 @@ function checker(url, msg, fid){
 												}catch(e){;}
 											};
 											
-											startDraw(cvsSct.lastChild,url[k],fid,WIDTH, HEIGHT);
+														canvas = document.createElement('canvas');
+														canvas.setAttribute("from_frame",fid);
+														canvas.setAttribute("source_addr",url);
+														canvasCtx = canvas.getContext("2d");
+														canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+														canvasCtx.fillStyle = 'rgb(0,0,0)';
+
+													canvas.width  = img.width;
+													canvas.height = img.height;
+													canvasCtx.drawImage(img, 0, 0, img.width, img.height);
+													cvsSct.appendChild(canvas);
+													canvas.style.setProperty( 'display', 'none', 'important' );
+													
+													if(cvsSel.selectedIndex==0){
+														cvsSct.style.setProperty( 'display', 'none', 'important' );
+													}else if(cvsSel.selectedIndex>=1){
+														cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
+													}
+													
+													 getColours(canvas,canvasCtx,url,img);
+
 									}
 							});
 
