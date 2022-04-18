@@ -345,7 +345,6 @@ function drawImageFromWebUrl(url, canvas, ctx, OG_img){
 					canvas.height = OG_img.height;
 				   ctx.drawImage(OG_img, 0, 0, OG_img.width, OG_img.height);
 			  cvsSct.appendChild(canvas);
-			  elRemover(OG_img);
 				if(cvsSel.selectedIndex==0){
 					cvsSct.style.setProperty( 'display', 'none', 'important' );
 				}else if(cvsSel.selectedIndex>=1){
@@ -494,6 +493,7 @@ function checker(url, msg, fid){
 
 							  img.setAttribute("from_frame", fid);
 							  img.setAttribute("src", url[k]);
+							  
 							}else if(src_ix>=0 && fid!=0){
 								let old_fid=srcs[src_ix][1];
 								let c=[...cvsSct.getElementsByTagName('CANVAS')];
