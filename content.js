@@ -5,7 +5,6 @@ var blacklist='';
 var fr_id=null;
 var tb_id=null;
 var to_draw=[];
-var timer;
 
 var cvsSctTop=document.createElement('section');
 var cvsSct=document.createElement('section');
@@ -492,7 +491,7 @@ function checker(url, msg, fid){
 			}
 }
 
-function removeCanvases(){
+function procCanvases(){
 	if(fr_id==0){
 		clear_out();
 	}
@@ -505,35 +504,18 @@ function gotMessage(message, sender, sendResponse) {
 	if(message.message=="rep_tb"){
 		get_ids(false);	
 	}else if(message.message=="nav"){
-		removeCanvases();
+		if(message.f_id===fr_id && window.location.href!==message.url){
+			chrome.runtime.sendMessage({message: "nav_0",old_url: chg, new_url: window.location.href}, function(response) {});
+			chg=window.location.href;
+		}
+	}else if(message.message=="nav_0"){
+			procCanvases();
 	}else if(message.message=="rqi"){
 			checker(message.imgSrc, message.message, message.f_id);
 	}else{
 		checker(message.imgSrc, message.message, message.f_id);
 	}
-}
-
-			if (typeof observer === "undefined" && typeof timer === "undefined") {
-    const observer = new MutationObserver((mutations) => {
-        if (timer) {
-            clearTimeout(timer);
-        }
-        timer = setTimeout(() => {
-            if (window.location.href != chg) {
-					chrome.runtime.sendMessage({message: "nav",old_url: chg, new_url: window.location.href}, function(response) {});
-	            	chg = window.location.href;
-			}
-        }, 150);
-    });
-
- observer.observe(document, {
-        attributes: true,
-        childList: true,
-        subtree: true,
-        characterData: true,
-        attributeOldValue: true,
-        characterDataOldValue: true
-    });
+	return true; 
 }
 
 get_ids(true);

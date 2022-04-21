@@ -49,18 +49,32 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 		}
 });
 	
+
 chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info)=>{
-		sendImg(info.request, "detect",info.request.tabId,info.request.frameId);
+	if(info.request.tabId>=0){
+		chrome.webNavigation.getFrame({
+		tabId: info.request.tabId,
+		frameId: info.request.frameId
+		}, function (frameInfo){
+				  chrome.tabs.sendMessage(info.request.tabId, {message: "nav", url:frameInfo.url, f_id: info.request.frameId});
+		});
+	}
+if(info.request.type==='image'){
+	sendImg(info.request, "detect",info.request.tabId,info.request.frameId);
+}
+
 });
+
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.message){
 	case "get_info":
 		sendResponse({info: sender});
 	break;	
-	case "nav":
+	case "nav_0":
 		addrs_rt(sender.tab.id);
-		chrome.tabs.sendMessage(sender.tab.id, {message: request.message, old_url:request.old_url, new_url:request.new_url, f_id: sender.frameId});
+		chrome.tabs.sendMessage(sender.tab.id, {message: request.message});
+	break;
 	break;	
 	case "clr":
 		addrs_rt(sender.tab.id);
