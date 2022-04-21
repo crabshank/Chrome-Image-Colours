@@ -1,4 +1,4 @@
-var chg = window.location.href;
+var chg = {u:window.location.href, c:0};
 var canvasses=[];
 var g_ix=0;
 var blacklist='';
@@ -506,9 +506,10 @@ function gotMessage(message, sender, sendResponse) {
 	if(message.message=="rep_tb"){
 		get_ids(false);	
 	}else if(message.message=="nav"){
-		if(message.f_id===fr_id && window.location.href!==message.url){
+		if(message.f_id===fr_id && ((chg.c==0) || (window.location.href!==chg.u && chg.c>0))){
 			chrome.runtime.sendMessage({message: "nav_0",old_url: chg, new_url: window.location.href}, function(response) {});
 			chg=window.location.href;
+			chg.c++;
 		}
 	}else if(message.message=="nav_0"){
 			procCanvases();

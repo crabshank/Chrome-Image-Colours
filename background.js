@@ -57,11 +57,16 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info)=>{
 		frameId: info.request.frameId
 		}, function (frameInfo){
 				  chrome.tabs.sendMessage(info.request.tabId, {message: "nav", url:frameInfo.url, f_id: info.request.frameId});
+				 if(info.request.type==='image'){
+						sendImg(info.request, "detect",info.request.tabId,info.request.frameId);
+					}
 		});
+	}else{
+		if(info.request.type==='image'){
+			sendImg(info.request, "detect",info.request.tabId,info.request.frameId);
+		}
 	}
-if(info.request.type==='image'){
-	sendImg(info.request, "detect",info.request.tabId,info.request.frameId);
-}
+
 
 });
 
