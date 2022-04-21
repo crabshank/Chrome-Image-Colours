@@ -507,8 +507,8 @@ function gotMessage(message, sender, sendResponse) {
 		get_ids(false);	
 	}else if(message.message=="nav"){
 		if(message.f_id===fr_id && ((chg.c==0) || (window.location.href!==chg.u && chg.c>0))){
-			chrome.runtime.sendMessage({message: "nav_0",old_url: chg, new_url: window.location.href}, function(response) {});
-			chg=window.location.href;
+			chrome.runtime.sendMessage({message: "nav_0",old_url: chg.u, new_url: window.location.href}, function(response) {});
+			chg.u=window.location.href;
 			chg.c++;
 		}
 	}else if(message.message=="nav_0"){
