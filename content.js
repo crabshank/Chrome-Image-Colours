@@ -471,6 +471,8 @@ function checker(url, msg, fid){
 							});
 
 							  img.setAttribute("from_frame", fid);
+							 img.style.setProperty( 'margin-bottom', '0.18%', 'important' ); 
+							 img.style.setProperty( 'margin-right', '0.18%', 'important' ); 
 							  img.setAttribute("src", url[k]);
 			}
 			}else if(msg=="hl"){
