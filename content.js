@@ -175,7 +175,7 @@ function absBoundingClientRect(el){
 	 if (cvsSel.selectedIndex>=2){
 		   	 sortByCol(cols, cvsSel.selectedIndex-2);
  }else if(cvsSel.selectedIndex==1){
-	 sortByArrCols(cols,[18,19],[-1,-1]);
+	 sortByArrCols(cols,[20,18,19],[-1,-1,-1]);
  }
 	 for (let j = 0; j<canvasses.length; j++){
 		 let el= canvasses[cols[j][17]];
@@ -387,7 +387,7 @@ function getColours(canvas,ctx,url,OG_img){
 try{
 g_ix=canvasses.length;
 let iRct=absBoundingClientRect(OG_img);
-var discr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,g_ix,iRct.top,iRct.left];
+var discr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,g_ix,iRct.top,iRct.left,0];
 
 var colour_data=ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height).data;
 var pxCnt=0;
@@ -407,6 +407,12 @@ for (let i = 0; i<=16; i++){
 discr[i]=discr[i]/pxCnt;
 }
 
+for (let i = 0; i<=12; i++){
+	if(discr[i]>0){
+		discr[20]++;
+	}
+}
+discr[20]=Math.sqrt(1-(discr[20]/14))*Math.sqrt((iRct.top*iRct.top)+(iRct.left*iRct.left));
 canvasses.push([canvas,ctx,OG_img,discr]);
 	
 doSort();
