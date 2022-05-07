@@ -412,7 +412,9 @@ for (let i = 0; i<=12; i++){
 		discr[20]++;
 	}
 }
-discr[20]=Math.sqrt(1-(discr[20]/14))*Math.sqrt((iRct.top*iRct.top)+(iRct.left*iRct.left));
+
+let c=discr[20];
+discr[20]=Math.sqrt(  1-(  ( (c==0)?0:c-1 )/13  )  )*Math.sqrt((iRct.top*iRct.top)+(iRct.left*iRct.left));
 canvasses.push([canvas,ctx,OG_img,discr]);
 	
 doSort();
