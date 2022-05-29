@@ -72,8 +72,10 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info)=>{
 
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	let sr=true;
 	switch (request.message){
 	case "get_info":
+		sr=false;
 		sendResponse({info: sender});
 	break;	
 	case "nav_0":
@@ -95,7 +97,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		;
 	break;
 	}
-	sendResponse({response: "Message received"});
+	if(sr){
+		sendResponse({response: "Message received"});
+	}
 });
 
 }
