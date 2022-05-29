@@ -72,33 +72,30 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info)=>{
 
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	let sr=true;
 	switch (request.message){
 	case "get_info":
-		sr=false;
 		sendResponse({info: sender});
 	break;	
 	case "nav_0":
 		addrs_rt(sender.tab.id);
 		chrome.tabs.sendMessage(sender.tab.id, {message: request.message});
-	break;
+		sendResponse({response: "Message received"});
 	break;	
 	case "clr":
 		addrs_rt(sender.tab.id);
+		sendResponse({response: "Message received"});
 	break;
 	case "hl":
 		sendImg(request.url, request.message, sender.tab.id, request.f_id);
+		sendResponse({response: "Message received"});
 	break;	
 	case "rqi":
 		chrome.tabs.sendMessage(sender.tab.id, {message: request.message, imgSrc: request.links, f_id: request.f_id});
-	break;
-
-	default:
-		;
-	break;
-	}
-	if(sr){
 		sendResponse({response: "Message received"});
+	break;
+	default:
+		sendResponse({response: "Message received"});
+	break;
 	}
 });
 
