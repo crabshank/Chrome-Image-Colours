@@ -10,7 +10,7 @@ var ev_queue=[];
 
 async function initActiveTab(get){
 	return new Promise((resolve)=>{
-			chrome.tabs.query({active: true, currentWindow:true},(tabs)=>{ if (!chrome.runtime.lastError || typeof tabs[0]!=='undefined') {
+			chrome.tabs.query({active: true, currentWindow:true},(tabs)=>{ if (!chrome.runtime.lastError && typeof tabs[0]!=='undefined') {
 				
 				let act=tabs[0].id;
 				if(typeof get==='undefined' || get===false){
@@ -24,8 +24,10 @@ async function initActiveTab(get){
 	});
 }
 
- async function setBdgTxt(){
-	await initActiveTab(true);
+ async function setBdgTxt(get){
+	 if(typeof get!=='undefined' && get===true){
+		await initActiveTab(true);
+	 }
 			ix=tbs.findIndex((t)=>{return t.id===ac_tab}); if(ix>=0){
 				chrome.action.setBadgeText({
 					'text': (tbs[ix].count).toString()
@@ -84,7 +86,7 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
 });
 
 async function tabs_onActivated (activeInfo){
-		setBdgTxt();
+		setBdgTxt(true);
 }
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
