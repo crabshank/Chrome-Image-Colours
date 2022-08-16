@@ -177,10 +177,6 @@ async function runtime_onMessage(request, sender, sendResponse){
 	break;	
 	case "clr":
 		addrs_rt(sender.tab.id);
-		sendResponse({response: "Message received"});
-	break;	
-	case "clr2":
-		addrs_rt(sender.tab.id);
 		ix=tbs.findIndex((t)=>{return t.id===sender.tab.id}); if(ix>=0){
 			tbs[ix].count=0;
 		}
