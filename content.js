@@ -57,6 +57,7 @@ colNames.forEach(name => {
 
  cvsClr.onclick=function(){
 	clear_out();
+	chrome.runtime.sendMessage({message: "clr2"}, function(response) {});
  }
  
 cvsSel.oninput=function(){
@@ -425,7 +426,7 @@ function checker(url, msg, fid){
 	if(cvsSel.selectedIndex==0){
 		to_draw.push([url, msg, fid]);
 	}else if((msg=="detect" || msg=="rqi") && fr_id==0 && cvsSel.selectedIndex>=1){
-					for(let k=0, len=url.length; k<len; k++){	
+					for(let k=0, len=url.length; k<len; k++){
 										let i_arr=[...cvsSct.getElementsByTagName('IMG')];
 										let i_arr_m=i_arr.findIndex((i)=>{return i.getAttribute('src')===url[k];});
 
@@ -471,10 +472,10 @@ function checker(url, msg, fid){
 														cvsSct.style.setProperty( 'display', 'none', 'important' );
 													}else if(cvsSel.selectedIndex>=1){
 														cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
+														chrome.runtime.sendMessage({message: "cnt", count: [...cvsSct.getElementsByTagName('CANVAS')].length}, function(response) {});
 													}
 													
 													 getColours(canvas,canvasCtx,url,img);
-
 									}
 							});
 
