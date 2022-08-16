@@ -57,7 +57,6 @@ colNames.forEach(name => {
 
  cvsClr.onclick=function(){
 	clear_out();
-	chrome.runtime.sendMessage({message: "clr2"}, function(response) {});
  }
  
 cvsSel.oninput=function(){
