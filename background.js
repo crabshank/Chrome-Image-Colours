@@ -1,58 +1,25 @@
 try {
-var tbo=JSON.stringify({id:-2, count:0});
-var tbs=[];
 var addrs=[];
-var ac_tab=-2;
-var ix=-1;
-var prg=false;
-var ev_queue=[];
+var tbs=[];
+var ac_tab=null;
 
-
-async function initActiveTab(get){
+async function initActiveTab(){
 	return new Promise((resolve)=>{
 			chrome.tabs.query({active: true, currentWindow:true},(tabs)=>{ if (!chrome.runtime.lastError && typeof tabs[0]!=='undefined') {
-				
-				let act=tabs[0].id;
-				if(typeof get==='undefined' || get===false){
-					setBdgTxt();
-				}
-				ac_tab=act;
-				resolve();
-			}else{
-				resolve();
-			}});
-	});
-}
-
- async function setBdgTxt(get){
-	 if(typeof get!=='undefined' && get===true){
-		await initActiveTab(true);
-	 }
-			ix=tbs.findIndex((t)=>{return t.id===ac_tab}); if(ix>=0){
-				chrome.action.setBadgeText({
-					'text': (tbs[ix].count).toString()
-				}, ()=>{;});
+				ac_tab=tabs[0].id;
 			}
-}
-
-async function initialise(){
-		return new Promise(function(resolve, reject) {
-			chrome.tabs.query({}, function(tabs) { if (!chrome.runtime.lastError) {
-					for (let t = 0; t < tabs.length; t++) {
-						let tob=JSON.parse(tbo);
-						tob.id=tabs[t].id;
-						tbs.push(tob);
-					}
-					resolve();
-				}else{
-					resolve();
-				}
-		});
+				resolve();
+			});
 	});
 }
 
-initialise();
-initActiveTab();
+async function setBdg(n){
+	return new Promise((resolve)=>{
+			chrome.action.setBadgeText({
+					'text': n.toString()
+				}, ()=>{resolve();});	
+			});
+}
 
 function sendImg(requestDetails, msg, tid,fid) {
 	if(msg=="hl"){
@@ -68,57 +35,28 @@ function sendImg(requestDetails, msg, tid,fid) {
 
 function start() {
 	
-async function tabs_onReplaced(addedTabId, removedTabId) {
+	chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
 	for (let i = 0, len = addrs.length; i<len; i++){
 		if(addrs[i].tabId==removedTabId){
 			addrs[i].tabId=addedTabId;
 			chrome.tabs.sendMessage(addedTabId, {message: "rep_tb"});
 		}
 	}
-	ix=tbs.findIndex((t)=>{return t.id===removedTabId}); if(ix>=0){
-			tbs[ix].id=addedTabId;
-	}
-			setBdgTxt();
-}
-	
-chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
-	ev_loop(()=>{tabs_onReplaced(addedTabId, removedTabId);});
 });
 
-async function tabs_onActivated (activeInfo){
-		setBdgTxt(true);
-}
-
-chrome.tabs.onActivated.addListener((activeInfo) => {
-	ev_loop(()=>{tabs_onActivated(activeInfo);});
+chrome.tabs.onActivated.addListener(function(activeInfo) {
+	chrome.tabs.sendMessage(activeInfo.tabId, {message: "cnt_this"});
 });
 
 function addrs_rt(id){
 	addrs=addrs.filter((a)=>{return a.tabId!=id});
 }
 
-async function tabs_onCreated(tab){
-	let tob=JSON.parse(tbo);
-	tob.id=tab.id;
-	tbs.push(tob);
-	setBdgTxt();
-}
-
-chrome.tabs.onCreated.addListener((tab)=>{
-	ev_loop(()=>{tabs_onCreated(tab);});
-});
-
-async function tabs_onRemoved(tabId, removeInfo) {
-		 addrs_rt(tabId);
-		 tbs=tbs.filter((t)=>{return t.id!==tabId});
-		 setBdgTxt();
-}
-
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-		 ev_loop(()=>{tabs_onRemoved(tabId, removeInfo);});
+		 addrs_rt(tabId);
 });
 
-async function tabs_onUpdated(tabId, changeInfo, tab) {
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 		if (!!changeInfo.url) {
 			var filt=addrs.filter((adr)=>{return adr.tabId!=tabId;});
 			addrs=filt;
@@ -133,24 +71,19 @@ async function tabs_onUpdated(tabId, changeInfo, tab) {
 				}
 			});
 		}
-}
-
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-		 ev_loop(()=>{tabs_onUpdated(tabId, changeInfo, tab) ;});
 });
+	
 
-async function declarativeNetRequest_onRuleMatchedDebug(info){
+chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info)=>{
 	if(info.request.tabId>=0){
 		chrome.webNavigation.getFrame({
 		tabId: info.request.tabId,
 		frameId: info.request.frameId
 		}, function (frameInfo){
-			if(frameInfo!==null){
-					chrome.tabs.sendMessage(info.request.tabId, {message: "nav", url:frameInfo.url, f_id: info.request.frameId});
-					if(info.request.type==='image'){
+				  chrome.tabs.sendMessage(info.request.tabId, {message: "nav", url:frameInfo.url, f_id: info.request.frameId});
+				 if(info.request.type==='image'){
 						sendImg(info.request, "detect",info.request.tabId,info.request.frameId);
 					}
-			}
 		});
 	}else{
 		if(info.request.type==='image'){
@@ -159,14 +92,20 @@ async function declarativeNetRequest_onRuleMatchedDebug(info){
 	}
 
 
-}
-
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info)=>{
-	 ev_loop(()=>{declarativeNetRequest_onRuleMatchedDebug(info);});
 });
 
-async function runtime_onMessage(request, sender, sendResponse){
-		switch (request.message){
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	switch (request.message){
+	case "cnt":
+	 (async ()=>{
+		 await initActiveTab();
+			if(ac_tab===sender.tab.id){
+				await setBdg(request.count);
+			}
+			sendResponse({info: sender});
+	})();
+	break;		
 	case "get_info":
 		sendResponse({info: sender});
 	break;	
@@ -177,17 +116,6 @@ async function runtime_onMessage(request, sender, sendResponse){
 	break;	
 	case "clr":
 		addrs_rt(sender.tab.id);
-		ix=tbs.findIndex((t)=>{return t.id===sender.tab.id}); if(ix>=0){
-			tbs[ix].count=0;
-		}
-		setBdgTxt();
-		sendResponse({response: "Message received"});
-	break;	
-	case "cnt":
-		ix=tbs.findIndex((t)=>{return t.id===sender.tab.id}); if(ix>=0){
-			tbs[ix].count=request.count;
-		}
-		setBdgTxt();
 		sendResponse({response: "Message received"});
 	break;
 	case "hl":
@@ -202,27 +130,11 @@ async function runtime_onMessage(request, sender, sendResponse){
 		sendResponse({response: "Message received"});
 	break;
 	}
-}
-
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
- ev_loop(()=>{ runtime_onMessage(request, sender, sendResponse);});
 });
 
 }
 
 start();
-
-async function ev_loop(f){
-	ev_queue.push(f);
-	if(prg===false){
-		while(ev_queue.length>0){
-			prg=true;
-			await ev_queue[0]();
-			ev_queue=ev_queue.slice(1);
-		}
-		prg=false;
-	}
-}
 
 } catch (e) {
   console.error(e);
