@@ -72,7 +72,7 @@ cvsSel.oninput=function(){
 }
 
 async function get_ids(start_up){
-	await new Promise(function(resolve, reject) {
+	return new Promise(function(resolve, reject) {
 		chrome.runtime.sendMessage({message: "get_info"}, function(response) {
 			fr_id=response.info.frameId;
 			tb_id=response.info.tab.id;
@@ -514,7 +514,7 @@ function procCanvases(){
 chrome.runtime.onMessage.addListener(gotMessage);
 function gotMessage(message, sender, sendResponse) {
 	if(message.message=="rep_tb"){
-		get_ids(false);	
+		(async ()=>{ await get_ids(false); })();
 	}else if(message.message=="nav"){
 		if(message.f_id===fr_id && ((chg.c==0) || (window.location.href!==chg.u && chg.c>0))){
 			chrome.runtime.sendMessage({message: "nav_0",old_url: chg.u, new_url: window.location.href}, function(response) {});
@@ -535,4 +535,4 @@ function gotMessage(message, sender, sendResponse) {
 	return true; 
 }
 
-get_ids(true);
+(async ()=>{ await get_ids(true); })();
