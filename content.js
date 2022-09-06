@@ -37,6 +37,7 @@ cvsClr.style.setProperty( 'user-select', 'none', 'important' );
 cvsClr.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
 cvsSel.title='Select colour to sort by';
+document.body.insertAdjacentHTML('beforeend', '<br><br>');
 document.body.insertAdjacentElement('beforeend', cvsSct);
 cvsSctTop.appendChild(cvsSel);
 cvsSctTop.appendChild(cvsClr);
