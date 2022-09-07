@@ -437,9 +437,9 @@ function checker(url, msg, fid){
 										
 						var img = new Image();
 						img.setAttribute('crossOrigin', '');
-							img.addEventListener("load", function () {
-										var WIDTH =img.width;
-										var HEIGHT = img.height;
+							img.addEventListener("load", function (e) {
+										var WIDTH =e.target.width;
+										var HEIGHT = e.target.height;
 									if(WIDTH>0 && HEIGHT >0){
 										let c_arr=[...cvsSct.getElementsByTagName('CANVAS')];
 										let c_arr_m=c_arr.findIndex((c)=>{return c.getAttribute('source_addr')===url[k];});
@@ -447,9 +447,9 @@ function checker(url, msg, fid){
 										if(c_arr_m>=0){
 											elRemover(c_arr[c_arr_m]);
 										}
-											cvsSct.appendChild(img);
+											cvsSct.appendChild(e.target);
 											
-											img.onclick=(event)=>{
+											e.target.onclick=(event)=>{
 												event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
 												chrome.runtime.sendMessage({message: "hl",url: url, f_id:parseInt(event.target.getAttribute("from_frame"))}, function(response) {});
 												try{
@@ -465,7 +465,7 @@ function checker(url, msg, fid){
 														canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 														canvasCtx.fillStyle = 'rgb(0,0,0)';
 
-													canvasCtx.drawImage(img, 0, 0, WIDTH,HEIGHT);
+													canvasCtx.drawImage(e.target, 0, 0, WIDTH,HEIGHT);
 													cvsSct.appendChild(canvas);
 													canvas.style.setProperty( 'display', 'none', 'important' );
 													
@@ -476,7 +476,7 @@ function checker(url, msg, fid){
 														chrome.runtime.sendMessage({message: "cnt", count: [...cvsSct.getElementsByTagName('CANVAS')].length}, function(response) {;});
 													}
 													
-													 getColours(canvas,canvasCtx,url,img);
+													 getColours(canvas,canvasCtx,url,e.target);
 
 									}
 							});
