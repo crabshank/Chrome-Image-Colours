@@ -25,9 +25,11 @@ function clear_out(){
 
 function setup(){
 
+cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
 cvsSctTop.style.setProperty( 'display', 'inline-flex', 'important' );
 cvsSctTop.style.setProperty( 'align-items', 'flex-start', 'important' );
 
+cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
 cvsSct.style.setProperty( 'display', 'none', 'important' );
 cvsSct.style.setProperty( 'flex-flow', 'wrap', 'important' );
 cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
@@ -37,7 +39,7 @@ cvsClr.style.setProperty( 'user-select', 'none', 'important' );
 cvsClr.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
 cvsSel.title='Select colour to sort by';
-document.body.insertAdjacentHTML('beforeend', '<br><br>');
+document.body.insertAdjacentHTML('beforeend', '<br style="user-select: none !important; -webkit-user-select: none !important;"><br style="user-select: none !important; -webkit-user-select: none !important;">');
 document.body.insertAdjacentElement('beforeend', cvsSct);
 cvsSctTop.appendChild(cvsSel);
 cvsSctTop.appendChild(cvsClr);
