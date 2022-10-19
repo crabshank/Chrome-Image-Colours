@@ -13,6 +13,7 @@ function rsz(){
 		let icvsR=absBoundingClientRect(cvsSct);
 		let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
 		ifrm.contentWindow.document.body.style.overflow='hidden';
+		ifrm.style.top=getScreenHeight(true)+'px';
 		if(t){
 			ifrm.style.height=(icvsTopR.bottom-ifrmdR.top+8)+'px';
 			ifrm.style.width=(icvsTopR.right-ifrmdR.left+8)+'px';
@@ -40,6 +41,8 @@ ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
 document.body.insertAdjacentElement('beforeend',ifrm);
 ifrm.src = "about:blank";
+
+ifrm.style.top=getScreenHeight(false)+'px';
 
 var cvsSctTop=document.createElement('section');
 ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
@@ -164,6 +167,39 @@ while(srCnt<shrc_l){
 	
 	return out;
 }
+
+
+function getScreenHeight(mx){
+	let h=[
+					document?.documentElement?.scrollHeight,
+					document?.body?.parentNode?.scrollHeight,
+					document?.body?.scrollHeight,
+					document?.head?.scrollHeight,
+					window.screen.availHeight,
+					window.screen.height,
+					document?.documentElement?. clientHeight,
+					document?.body?.parentNode?. clientHeight,
+					document?.body?. clientHeight,
+					document?.head?. clientHeight,
+					document?.documentElement?. offsetHeight,
+					document?.body?.parentNode?. offsetHeight,
+					document?.body?. offsetHeight,
+					document?.head?. offsetHeight
+				];
+				
+				h=h.filter( (g)=>{return g>0} );
+				
+			if(h.length>0){
+				if(mx){
+					return Math.max(...h);
+				}else{
+					return Math.min(...h);
+				}
+			}else{
+				return 0;
+			}
+}
+
 
 function absBoundingClientRect(el){
 	let st = [window?.scrollY,
