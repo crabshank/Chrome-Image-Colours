@@ -6,7 +6,44 @@ var fr_id=null;
 var tb_id=null;
 var to_draw=[];
 
+function rsz(){
+		let cvsSct_styl=window.getComputedStyle(cvsSct);
+		let t=(cvsSct_styl['display']==='none')?true:false;
+		let icvsTopR=absBoundingClientRect(cvsSctTop);
+		let icvsR=absBoundingClientRect(cvsSct);
+		let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
+		ifrm.contentWindow.document.body.style.overflow='hidden';
+		if(t){
+			ifrm.style.height=(icvsTopR.bottom-ifrmdR.top+8)+'px';
+			ifrm.style.width=(icvsTopR.right-ifrmdR.left+8)+'px';
+		}else{
+			ifrm.style.height=(icvsR.bottom-ifrmdR.top+8)+'px';
+			ifrm.style.width=(icvsR.right-ifrmdR.left+8)+'px';
+		}
+		
+}
+
+let ifrm=document.createElement('iframe');
+ifrm.style.setProperty( 'position', 'absolute', 'important' );
+ifrm.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
+ifrm.style.setProperty( 'min-width', '-webkit-fill-available', 'important' );
+ifrm.style.setProperty( 'width', '-webkit-fill-available', 'important' );
+ifrm.style.setProperty( 'margin', 0, 'important' );
+ifrm.style.setProperty( 'border', 0, 'important' );
+ifrm.style.setProperty( 'padding', 0, 'important' );
+ifrm.style.setProperty( 'display', 'flex', 'important' );
+ifrm.style.setProperty( 'background', '#121212', 'important' );
+ifrm.style.setProperty( 'transform', 'translateY(0px)', 'important' );
+ifrm.style.setProperty( 'transform-origin', 'left top', 'important' );
+ifrm.style.setProperty( 'user-select', 'none', 'important' );
+ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
+
+document.body.insertAdjacentElement('beforeend',ifrm);
+ifrm.src = "about:blank";
+
 var cvsSctTop=document.createElement('section');
+ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
+
 var cvsSct=document.createElement('section');
 var cvsClr=document.createElement('button');
 var cvsSel=document.createElement('select');
@@ -20,16 +57,17 @@ function clear_out(){
 		to_draw=[];
 		chrome.runtime.sendMessage({message: "clr"}, function(response) {});
 		chrome.runtime.sendMessage({message: "cnt", count:0}, function(response) {});
+		rsz();
 	}
 }
 
 function setup(){
 
-cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
+//cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
 cvsSctTop.style.setProperty( 'display', 'inline-flex', 'important' );
 cvsSctTop.style.setProperty( 'align-items', 'flex-start', 'important' );
 
-cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
+//cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
 cvsSct.style.setProperty( 'display', 'none', 'important' );
 cvsSct.style.setProperty( 'flex-flow', 'wrap', 'important' );
 cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
@@ -39,11 +77,12 @@ cvsClr.style.setProperty( 'user-select', 'none', 'important' );
 cvsClr.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
 cvsSel.title='Select colour to sort by';
-document.body.insertAdjacentHTML('beforeend', '<br style="user-select: none !important; -webkit-user-select: none !important;"><br style="user-select: none !important; -webkit-user-select: none !important;">');
-document.body.insertAdjacentElement('beforeend', cvsSct);
+//document.body.insertAdjacentHTML('beforeend', '<br style="user-select: none !important; -webkit-user-select: none !important;"><br style="user-select: none !important; -webkit-user-select: none !important;">');
+ ifrm.contentWindow.document.body.insertAdjacentElement('beforeend', cvsSct);
 cvsSctTop.appendChild(cvsSel);
 cvsSctTop.appendChild(cvsClr);
 cvsSct.insertAdjacentElement('beforebegin', cvsSctTop);
+
 cvsSel.style.setProperty( 'display', 'flex', 'important' );
 cvsSel.style.setProperty( 'background-color', 'buttonface', 'important' );
 cvsSel.style.setProperty( 'user-select', 'none', 'important' );
@@ -58,7 +97,7 @@ colNames.forEach(name => {
 
     cvsSel.appendChild(opt);
   });
-
+ 
  cvsClr.onclick=function(){
 	clear_out();
  }
@@ -72,6 +111,8 @@ cvsSel.oninput=function(){
 	}
 	doSort();
 }
+
+ rsz();
 }
 
 async function get_ids(start_up){
@@ -453,7 +494,7 @@ function checker(url, msg, fid){
 											
 											e.target.onclick=(event)=>{
 												event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
-												chrome.runtime.sendMessage({message: "hl",url: url, f_id:parseInt(event.target.getAttribute("from_frame"))}, function(response) {});
+												chrome.runtime.sendMessage({message: "hl",url: event.target.getAttribute('src'), f_id:parseInt(event.target.getAttribute("from_frame"))}, function(response) {});
 												try{
 													OG_img.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
 													OG_img.scrollIntoView();
@@ -474,10 +515,10 @@ function checker(url, msg, fid){
 													if(cvsSel.selectedIndex==0){
 														cvsSct.style.setProperty( 'display', 'none', 'important' );
 													}else if(cvsSel.selectedIndex>=1){
-														cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
+														cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );	
 														chrome.runtime.sendMessage({message: "cnt", count: [...cvsSct.getElementsByTagName('CANVAS')].length}, function(response) {;});
 													}
-													
+													rsz();
 													 getColours(canvas,canvasCtx,url,e.target);
 
 									}
@@ -485,8 +526,9 @@ function checker(url, msg, fid){
 
 							  img.setAttribute("from_frame", fid);
 							 img.style.setProperty( 'margin-bottom', '0.18%', 'important' ); 
-							 img.style.setProperty( 'margin-right', '0.18%', 'important' ); 
-							  img.setAttribute("src", url[k]);
+							 img.style.setProperty( 'margin-right', '0.18%', 'important' );
+							 img.crossOrigin = "Anonymous";
+							 img.setAttribute("src", url[k]);
 			}
 			}else if(msg=="hl"){
 					try{
@@ -494,9 +536,9 @@ function checker(url, msg, fid){
 						var all_i=getTagNameShadow(document,'IMG');
 						var cviF=all_i.filter((i)=>{return !cvi.includes(i);});
 						for(let k=0, len=url.length; k<len; k++){
-								for (let i=0, len=cviF.length; i<len; i++){
+								for (let i=0, len_i=cviF.length; i<len_i; i++){
 									let s=(cviF[i].src==='')?cviF[i].currentSrc:cviF[i].src;
-									if(s===url[k]){
+									if(s===url){
 										cviF[i].scrollIntoView();
 										cviF[i].style.setProperty(  'border', 'red 0.3ch outset', 'important' );
 									}
