@@ -25,28 +25,66 @@ function getScrollY(){
 	return Math.max(...t);
 }
 
+function getScreenWidth(mx){
+	let w=[
+					//document?.documentElement?.scrollWidth,
+					//document?.body?.parentNode?.scrollWidth,
+					//document?.body?.scrollWidth,
+					//document?.head?.scrollWidth,
+					//window.screen.availWidth,
+					//window.screen.width,
+					document?.documentElement?. clientWidth,
+					document?.body?.parentNode?. clientWidth,
+					document?.body?. clientWidth,
+					document?.head?. clientWidth,
+					document?.documentElement?. offsetWidth,
+					document?.body?.parentNode?. offsetWidth,
+					document?.body?. offsetWidth,
+					document?.head?. offsetWidth
+				].filter( (d)=>{return d>0} );
+				
+		if(w.length>0){
+				if(mx){	
+					return Math.max(...w);
+				}else{
+					return Math.min(...w);
+				}
+			}else{
+				return 0;
+			}
+}
+
 function rsz(){
+		cvsSct.style.setProperty('transform','scale(1)','important' );
 		let cvsSct_styl=window.getComputedStyle(cvsSct);
 		let t=(cvsSct_styl['display']==='none')?true:false;
 		let icvsTopR=absBoundingClientRect(cvsSctTop);
-		let icvsR=absBoundingClientRect(cvsSct);
+		let icvsR=absBoundingClientRect(cvsSct); //image container
 		let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
 		ifrm.contentWindow.document.body.style.overflow='hidden';
 		setTop();
+		let iw;
 		if(t){
 			ifrm.style.height=(icvsTopR.bottom-ifrmdR.top+8)+'px';
-			ifrm.style.width=(icvsTopR.right-ifrmdR.left+8)+'px';
+			iw=icvsTopR.right-ifrmdR.left; //widest image + 8
 		}else{
 			ifrm.style.height=(icvsR.bottom-ifrmdR.top+8)+'px';
-			ifrm.style.width=(icvsR.right-ifrmdR.left+8)+'px';
+			iw=icvsR.right-ifrmdR.left;
 		}
-		
+		let sw=getScreenWidth(false)-8;
+		ifrm.style.width=(sw+8)+'px'; //set to sw
+		let ifrmR=absBoundingClientRect(ifrm);
+		icvsR=absBoundingClientRect(cvsSct); 
+		if(icvsR.width>0){
+			let s=((ifrmR.width-8)/(icvsR.width))*0.995;
+			cvsSct.style.setProperty('transform','scale('+s+')','important' );
+		}
 }
 
 let ifrm=document.createElement('iframe');
 ifrm.style.setProperty( 'position', 'absolute', 'important' );
 ifrm.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
-ifrm.style.setProperty( 'min-width', '-webkit-fill-available', 'important' );
+ifrm.style.setProperty( 'height', '-webkit-fill-available', 'important' );
 ifrm.style.setProperty( 'width', '-webkit-fill-available', 'important' );
 ifrm.style.setProperty( 'margin', 0, 'important' );
 ifrm.style.setProperty( 'border', 0, 'important' );
@@ -94,8 +132,9 @@ function setup(){
 //cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
 cvsSctTop.style.setProperty( 'display', 'inline-flex', 'important' );
 cvsSctTop.style.setProperty( 'align-items', 'flex-start', 'important' );
-
 //cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
+
+cvsSct.style.setProperty('transform-origin','top left','important' );
 cvsSct.style.setProperty( 'display', 'none', 'important' );
 cvsSct.style.setProperty( 'flex-flow', 'wrap', 'important' );
 cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
