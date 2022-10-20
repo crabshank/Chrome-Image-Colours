@@ -6,6 +6,19 @@ var fr_id=null;
 var tb_id=null;
 var to_draw=[];
 
+function getScrollY(){					
+	let t = [		window?.pageYOffset,
+											window?.scrollY,
+											document?.documentElement?.scrollTop,
+											document?.body?.parentNode?.scrollTop,
+											document?.body?.scrollTop,
+											document?.head?.scrollTop,
+											0
+										].filter( (p)=>{return p>=0} );
+										
+	return Math.max(...t);
+}
+
 function rsz(){
 		let cvsSct_styl=window.getComputedStyle(cvsSct);
 		let t=(cvsSct_styl['display']==='none')?true:false;
@@ -13,7 +26,7 @@ function rsz(){
 		let icvsR=absBoundingClientRect(cvsSct);
 		let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
 		ifrm.contentWindow.document.body.style.overflow='hidden';
-		ifrm.style.top=getScreenHeight(true)+'px';
+		ifrm.style.top=(getScrollY()+getScreenHeight(false))+'px';
 		if(t){
 			ifrm.style.height=(icvsTopR.bottom-ifrmdR.top+8)+'px';
 			ifrm.style.width=(icvsTopR.right-ifrmdR.left+8)+'px';
@@ -42,7 +55,14 @@ ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 document.body.insertAdjacentElement('beforeend',ifrm);
 ifrm.src = "about:blank";
 
-ifrm.style.top=getScreenHeight(true)+'px';
+ifrm.style.top=(getScrollY()+getScreenHeight(false))+'px';
+
+					ifrm.ownerDocument.addEventListener("scroll", (event) => {
+						ifrm.style.top=(getScrollY()+getScreenHeight(false))+'px';
+					}, {capture: true, passive:false});
+					ifrm.ownerDocument.addEventListener("scroll", (event) => {
+						ifrm.style.top=(getScrollY()+getScreenHeight(false))+'px';
+					}, {capture: false, passive:false});
 
 var cvsSctTop=document.createElement('section');
 ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
