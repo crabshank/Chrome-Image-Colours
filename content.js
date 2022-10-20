@@ -42,7 +42,7 @@ ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 document.body.insertAdjacentElement('beforeend',ifrm);
 ifrm.src = "about:blank";
 
-ifrm.style.top=getScreenHeight(false)+'px';
+ifrm.style.top=getScreenHeight(true)+'px';
 
 var cvsSctTop=document.createElement('section');
 ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
