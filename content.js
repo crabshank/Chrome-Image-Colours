@@ -192,7 +192,7 @@ async function get_ids(start_up){
 				if(fr_id==0){
 					setup();
 					restore_options();
-				let lks=getTagNameShadow(document, 'IMG').map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
+				let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
 				chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
 				}else{
 					restore_options();
@@ -205,33 +205,63 @@ async function get_ids(start_up){
 	});
 }
 
-function getTagNameShadow(docm, tgn){
+function keepMatchesShadow(els,slc,isNodeName){
+   if(slc===false){
+      return els;
+   }else{
+      let out=[];
+   for(let i=0, len=els.length; i<len; i++){
+      let n=els[i];
+           if(isNodeName){
+	            if((n.nodeName.toLocaleLowerCase())===slc){
+	                out.push(n);
+	            }
+           }else{ //selector
+	               if(!!n.matches && typeof n.matches!=='undefined' && n.matches(slc)){
+	                  out.push(n);
+	               }
+           }
+   	}
+   	return out;
+   	}
+}
+
+function getMatchingNodesShadow(docm, slc, isNodeName, onlyShadowRoots){
+slc=(isNodeName && slc!==false)?(slc.toLocaleLowerCase()):slc;
 var shrc=[docm];
 var shrc_l=1;
-
+var out=[];
 let srCnt=0;
 
 while(srCnt<shrc_l){
-	allNodes=[shrc[srCnt],...shrc[srCnt].querySelectorAll('*')];
-	for(let i=0, len=allNodes.length; i<len; i++){
-		if(!!allNodes[i] && typeof allNodes[i] !=='undefined' && allNodes[i].tagName===tgn && i>0){
-			shrc.push(allNodes[i]);
-		}
-
-		if(!!allNodes[i].shadowRoot && typeof allNodes[i].shadowRoot !=='undefined'){
-			let c=allNodes[i].shadowRoot.children;
-			shrc.push(...c);
-		}
+	let curr=shrc[srCnt];
+	let sh=(!!curr.shadowRoot && typeof curr.shadowRoot !=='undefined')?true:false;
+	let nk=keepMatchesShadow([curr],slc,isNodeName);
+	let nk_l=nk.length;
+	
+	if( !onlyShadowRoots && nk_l>0){  
+		out.push(...nk);
 	}
+	
+	shrc.push(...curr.childNodes);
+	
+	if(sh){
+		   let cs=curr.shadowRoot;
+		   let csc=[...cs.childNodes];
+			   if(onlyShadowRoots){
+			      if(nk_l>0){
+			       out.push({root:nk[0], childNodes:csc});
+			      }
+			   }
+			   shrc.push(...csc);
+	}
+
 	srCnt++;
 	shrc_l=shrc.length;
 }
-	shrc=shrc.slice(1);
-	let out=shrc.filter((c)=>{return c.tagName===tgn;});
-	
-	return out;
-}
 
+return out;
+}
 
 function getScreenHeight(mx){
 	let h=[
@@ -633,7 +663,7 @@ function checker(url, msg, fid){
 			}else if(msg=="hl"){
 					try{
 						var cvi=(fr_id==0)?[...cvsSct.getElementsByTagName('IMG')]:[];
-						var all_i=getTagNameShadow(document,'IMG');
+						var all_i=getMatchingNodesShadow(document,'IMG',true,false);
 						var cviF=all_i.filter((i)=>{return !cvi.includes(i);});
 						for(let k=0, len=url.length; k<len; k++){
 								for (let i=0, len_i=cviF.length; i<len_i; i++){
@@ -652,7 +682,7 @@ function procCanvases(){
 	if(fr_id==0){
 		clear_out();
 	}
-	let lks=getTagNameShadow(document, 'IMG').map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
+	let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
 	chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
 }
 
