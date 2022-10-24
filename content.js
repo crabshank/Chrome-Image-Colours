@@ -5,6 +5,7 @@ var blacklist='';
 var fr_id=null;
 var tb_id=null;
 var to_draw=[];
+var resizeObserver=null;
 
 var setTop=()=>{
 	let dr=absBoundingClientRect(document.documentElement);
@@ -61,23 +62,27 @@ function rsz(){
 		let icvsTopR=absBoundingClientRect(cvsSctTop);
 		let icvsR=absBoundingClientRect(cvsSct); //image container
 		let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
-		ifrm.contentWindow.document.body.style.overflow='hidden';
+		ifrm.contentWindow.document.body.style.overflowY='hidden';
+		ifrm.contentWindow.document.body.style.display='inline-flex';
+		ifrm.contentWindow.document.body.style.flexFlow='column';
 		setTop();
 		let iw;
 		if(t){
-			ifrm.style.height=(icvsTopR.bottom-ifrmdR.top+8)+'px';
 			iw=icvsTopR.right-ifrmdR.left; //widest image + 8
 		}else{
-			ifrm.style.height=(icvsR.bottom-ifrmdR.top+8)+'px';
 			iw=icvsR.right-ifrmdR.left;
 		}
 		let sw=getScreenWidth(false)-8;
 		ifrm.style.width=(sw+8)+'px'; //set to sw
+		
 		let ifrmR=absBoundingClientRect(ifrm);
-		if(cvsSct.scrollWidth>0){
-			let s=((ifrmR.width-8)/(cvsSct.scrollWidth))*0.995;
+		let iw8=ifrmR.width-8;
+		let iw8s=iw8*0.995;
+		if(cvsSct.scrollWidth>0 && iw8s<cvsSct.scrollWidth){
+			let s=iw8s/cvsSct.scrollWidth;
 			cvsSct.style.setProperty('transform','scale('+s+')','important' );
 		}
+
 }
 
 let ifrm=document.createElement('iframe');
@@ -95,6 +100,7 @@ ifrm.style.setProperty( 'transform', 'translateY(0px)', 'important' );
 ifrm.style.setProperty( 'transform-origin', 'left top', 'important' );
 ifrm.style.setProperty( 'user-select', 'none', 'important' );
 ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
+
 
 document.body.insertAdjacentElement('beforeend',ifrm);
 ifrm.src = "about:blank";
@@ -184,6 +190,16 @@ cvsSel.oninput=function(){
 }
 
  rsz();
+ 
+	if(resizeObserver===null){
+		resizeObserver = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				ifrm.style.height=(entry.devicePixelContentBoxSize[0].blockSize)+'px';
+			}
+		});
+		 resizeObserver.observe(cvsSct);
+	}
+ 
 }
 
 async function get_ids(start_up){
@@ -195,6 +211,7 @@ async function get_ids(start_up){
 			if(start_up){
 				if(fr_id==0){
 					setup();
+					
 					restore_options();
 				let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
 				chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
