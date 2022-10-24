@@ -66,6 +66,7 @@ function rsz(){
 		ifrm.contentWindow.document.body.style.display='inline-flex';
 		ifrm.contentWindow.document.body.style.flexFlow='column';
 		ifrm.contentWindow.document.body.style.background='transparent';
+		ifrm.contentWindow.document.body.style.marginTop='0px';
 		setTop();
 		let iw;
 		if(t){
@@ -90,7 +91,7 @@ let ifrm=document.createElement('iframe');
 ifrm.style.setProperty( 'visibility', 'initial', 'important' );
 ifrm.style.setProperty( 'position', 'absolute', 'important' );
 ifrm.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
-ifrm.style.setProperty( 'height', '-webkit-fill-available', 'important' );
+ifrm.style.setProperty( 'height', 'max-content', 'important' );
 ifrm.style.setProperty( 'width', '-webkit-fill-available', 'important' );
 ifrm.style.setProperty( 'margin', 0, 'important' );
 ifrm.style.setProperty( 'border', 0, 'important' );
@@ -197,9 +198,10 @@ cvsSel.oninput=function(){
 		resizeObserver = new ResizeObserver((entries) => {
 			for (const entry of entries) {
 				ifrm.style.height=(entry.devicePixelContentBoxSize[0].blockSize)+'px';
+				rsz();
 			}
 		});
-		 resizeObserver.observe(cvsSct);
+		 resizeObserver.observe(ifrm.contentWindow.document.body);
 	}
  
 }
