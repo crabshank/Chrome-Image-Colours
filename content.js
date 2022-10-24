@@ -82,6 +82,7 @@ function rsz(){
 }
 
 let ifrm=document.createElement('iframe');
+ifrm.style.setProperty( 'visibility', 'initial', 'important' );
 ifrm.style.setProperty( 'position', 'absolute', 'important' );
 ifrm.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
 ifrm.style.setProperty( 'height', '-webkit-fill-available', 'important' );
