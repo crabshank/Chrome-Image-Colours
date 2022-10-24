@@ -62,9 +62,10 @@ function rsz(){
 		let icvsTopR=absBoundingClientRect(cvsSctTop);
 		let icvsR=absBoundingClientRect(cvsSct); //image container
 		let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
-		ifrm.contentWindow.document.body.style.overflowY='hidden';
+		ifrm.contentWindow.document.body.style.overflow='hidden';
 		ifrm.contentWindow.document.body.style.display='inline-flex';
 		ifrm.contentWindow.document.body.style.flexFlow='column';
+		ifrm.contentWindow.document.body.style.background='transparent';
 		setTop();
 		let iw;
 		if(t){
@@ -95,7 +96,7 @@ ifrm.style.setProperty( 'margin', 0, 'important' );
 ifrm.style.setProperty( 'border', 0, 'important' );
 ifrm.style.setProperty( 'padding', 0, 'important' );
 ifrm.style.setProperty( 'display', 'flex', 'important' );
-ifrm.style.setProperty( 'background', '#121212', 'important' );
+ifrm.style.setProperty( 'background', 'transparent', 'important' );
 ifrm.style.setProperty( 'transform', 'translateY(0px)', 'important' );
 ifrm.style.setProperty( 'transform-origin', 'left top', 'important' );
 ifrm.style.setProperty( 'user-select', 'none', 'important' );
@@ -148,6 +149,7 @@ cvsSct.style.setProperty('transform-origin','top left','important' );
 cvsSct.style.setProperty( 'display', 'none', 'important' );
 cvsSct.style.setProperty( 'flex-flow', 'wrap', 'important' );
 cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
+cvsSct.style.setProperty( 'background', '#121212', 'important' );
 
 cvsClr.innerText='Clear canvas';
 cvsClr.style.setProperty( 'user-select', 'none', 'important' );
