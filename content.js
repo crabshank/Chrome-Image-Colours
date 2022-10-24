@@ -74,9 +74,8 @@ function rsz(){
 		let sw=getScreenWidth(false)-8;
 		ifrm.style.width=(sw+8)+'px'; //set to sw
 		let ifrmR=absBoundingClientRect(ifrm);
-		icvsR=absBoundingClientRect(cvsSct); 
-		if(icvsR.width>0){
-			let s=((ifrmR.width-8)/(icvsR.width))*0.995;
+		if(cvsSct.scrollWidth>0){
+			let s=((ifrmR.width-8)/(cvsSct.scrollWidth))*0.995;
 			cvsSct.style.setProperty('transform','scale('+s+')','important' );
 		}
 }
@@ -127,6 +126,10 @@ function clear_out(){
 		rsz();
 	}
 }
+
+window.addEventListener('resize',(event)=>{
+	rsz();
+});
 
 function setup(){
 
