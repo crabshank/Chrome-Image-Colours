@@ -7,23 +7,14 @@ var tb_id=null;
 var to_draw=[];
 var resizeObserver=null;
 
-var setTop=()=>{
-	let dr=absBoundingClientRect(document.documentElement);
-	let ifr=absBoundingClientRect(ifrm);
-	ifrm.style.top=(Math.max(dr.bottom,getScreenHeight(true))-ifr.height)+'px';
+var setTop=(tp)=>{
+	let ifrmR=absBoundingClientRect(ifrm);
+	ifrm.style.top=(tp-ifrmR.height)+'px';
 }
 
-function getScrollY(){					
-	let t = [		window?.pageYOffset,
-											window?.scrollY,
-											document?.documentElement?.scrollTop,
-											document?.body?.parentNode?.scrollTop,
-											document?.body?.scrollTop,
-											document?.head?.scrollTop,
-											0
-										].filter( (p)=>{return p>=0} );
-										
-	return Math.max(...t);
+
+window.onscroll=(e)=>{
+	setTop(e.target.scrollingElement.scrollHeight);
 }
 
 function getScreenWidth(mx){
@@ -56,34 +47,37 @@ function getScreenWidth(mx){
 }
 
 function rsz(){
-		cvsSct.style.setProperty('transform','scale(1)','important' );
+		let imgs=getMatchingNodesShadow(cvsSct,'IMG',true,false);
+		for(let i=0, len=imgs.length; i<len; i++){
+			imgs[i].style.setProperty('zoom',1,'important' );
+		}
 		let cvsSct_styl=window.getComputedStyle(cvsSct);
 		let t=(cvsSct_styl['display']==='none')?true:false;
 		let icvsTopR=absBoundingClientRect(cvsSctTop);
-		let icvsR=absBoundingClientRect(cvsSct); //image container
+		//let icvsR=absBoundingClientRect(cvsSct); //image container
 		let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
 		ifrm.contentWindow.document.body.style.overflow='hidden';
 		ifrm.contentWindow.document.body.style.display='inline-flex';
 		ifrm.contentWindow.document.body.style.flexFlow='column';
 		ifrm.contentWindow.document.body.style.background='transparent';
 		ifrm.contentWindow.document.body.style.marginTop='0px';
-		setTop();
-		let iw;
-		if(t){
-			iw=icvsTopR.right-ifrmdR.left; //widest image + 8
-		}else{
-			iw=icvsR.right-ifrmdR.left;
-		}
-		let sw=getScreenWidth(false)-8;
-		ifrm.style.width=(sw+8)+'px'; //set to sw
+
+		let sw=getScreenWidth(false);
+		let swm8=sw-8;
+		ifrm.style.width=(sw)+'px'; //set to sw
+		cvsSct.style.width=(sw)+'px'; //set to sw
 		
-		let ifrmR=absBoundingClientRect(ifrm);
-		let iw8=ifrmR.width-8;
-		let iw8s=iw8*0.995;
-		if(cvsSct.scrollWidth>0 && iw8s<cvsSct.scrollWidth){
-			let s=iw8s/cvsSct.scrollWidth;
-			cvsSct.style.setProperty('transform','scale('+s+')','important' );
+		let iw8s=swm8*0.995;
+		
+		for(let i=0, len=imgs.length; i<len; i++){
+			let igi=imgs[i];
+			
+			if(igi.scrollWidth>0 && iw8s<igi.scrollWidth){
+				let s=iw8s/igi.scrollWidth;
+				igi.style.setProperty('zoom',s,'important' );
+			}
 		}
+
 
 }
 
@@ -106,13 +100,13 @@ ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
 document.body.insertAdjacentElement('beforeend',ifrm);
 ifrm.src = "about:blank";
-setTop();
+
 
 					ifrm.ownerDocument.addEventListener("scroll", (event) => {
-						setTop();
+						setTop(event.target.scrollingElement.scrollHeight);
 					}, {capture: true, passive:false});
 					ifrm.ownerDocument.addEventListener("scroll", (event) => {
-						setTop();
+						setTop(event.target.scrollingElement.scrollHeight);
 					}, {capture: false, passive:false});
 
 var cvsSctTop=document.createElement('section');
@@ -286,37 +280,6 @@ while(srCnt<shrc_l){
 }
 
 return out;
-}
-
-function getScreenHeight(mx){
-	let h=[
-					document?.documentElement?.scrollHeight,
-					document?.body?.parentNode?.scrollHeight,
-					document?.body?.scrollHeight,
-					document?.head?.scrollHeight,
-					window.screen.availHeight,
-					window.screen.height,
-					document?.documentElement?. clientHeight,
-					document?.body?.parentNode?. clientHeight,
-					document?.body?. clientHeight,
-					document?.head?. clientHeight,
-					document?.documentElement?. offsetHeight,
-					document?.body?.parentNode?. offsetHeight,
-					document?.body?. offsetHeight,
-					document?.head?. offsetHeight
-				];
-				
-				h=h.filter( (g)=>{return g>0} );
-				
-			if(h.length>0){
-				if(mx){
-					return Math.max(...h);
-				}else{
-					return Math.min(...h);
-				}
-			}else{
-				return 0;
-			}
 }
 
 
@@ -682,6 +645,7 @@ function checker(url, msg, fid){
 							  img.setAttribute("from_frame", fid);
 							 img.style.setProperty( 'margin-bottom', '0.18%', 'important' ); 
 							 img.style.setProperty( 'margin-right', '0.18%', 'important' );
+							 img.style.setProperty( 'transform-origin', 'left top', 'important' );
 							 img.crossOrigin = "Anonymous";
 							 img.setAttribute("src", url[k]);
 			}
