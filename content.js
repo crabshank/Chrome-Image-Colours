@@ -6,6 +6,7 @@ var fr_id=null;
 var tb_id=null;
 var to_draw=[];
 var resizeObserver=null;
+var wzoom=window.devicePixelRatio;
 
 var setTop=(tp)=>{
 	let ifrmR=absBoundingClientRect(ifrm);
@@ -15,6 +16,36 @@ var setTop=(tp)=>{
 
 window.onscroll=(e)=>{
 	setTop(e.target.scrollingElement.scrollHeight);
+}
+
+function getScreenHeight(mx){
+	let h=[
+					document?.documentElement?.scrollHeight,
+					document?.body?.scrollHeight,
+					document?.head?.scrollHeight,
+					window.screen.availHeight,
+					window.screen.height,
+					window.innerHeight,
+					window.outerHeight,
+					document?.documentElement?. clientHeight,
+					document?.body?. clientHeight,
+					document?.head?. clientHeight,
+					document?.documentElement?. offsetHeight,
+					document?.body?. offsetHeight,
+					document?.head?. offsetHeight
+				];
+				
+				h=h.filter( (g)=>{return g>0} );
+				
+			if(h.length>0){
+				if(mx){
+					return Math.max(...h);
+				}else{
+					return Math.min(...h);
+				}
+			}else{
+				return 0;
+			}
 }
 
 function getScreenWidth(mx){
@@ -100,7 +131,7 @@ ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
 document.body.insertAdjacentElement('beforeend',ifrm);
 ifrm.src = "about:blank";
-
+setTop(getScreenHeight(true));
 
 					ifrm.ownerDocument.addEventListener("scroll", (event) => {
 						setTop(event.target.scrollingElement.scrollHeight);
@@ -130,6 +161,12 @@ function clear_out(){
 }
 
 window.addEventListener('resize',(event)=>{
+	if(wzoom!==window.devicePixelRatio){ //page zoom
+		wzoom=window.devicePixelRatio;
+		setTop(getScreenHeight(false)*wzoom);
+	}else{
+		setTop(getScreenHeight(true));
+	}
 	rsz();
 });
 
