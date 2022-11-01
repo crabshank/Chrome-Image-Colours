@@ -2,6 +2,11 @@ try {
 var addrs=[];
 var tbs=[];
 var ac_tab=null;
+var sw_tab=false;
+var curr_bdg='';
+var og_col_bdg='#7CB0F8';
+var nw_col_bdg='#D9FE0C';
+var set_bdg_col_to;
 
 async function initActiveTab(){
 	return new Promise((resolve)=>{
@@ -13,12 +18,43 @@ async function initActiveTab(){
 	});
 }
 
+function set_bdg_col(){
+	chrome.action.setBadgeBackgroundColor({color: og_col_bdg});
+}
+
 async function setBdg(n){
 	return new Promise((resolve)=>{
+		
+		let ns=n.toString();
+		
+		function onSet_BadgeBackgroundColor(){
+			try{
+				set_bdg_col_to = setTimeout(set_bdg_col,3500);
+			}catch(e){;}finally{
+				resolve();
+			}
+		}
+		
+		if(sw_tab===true){
+			sw_tab=false;
+			clearTimeout(set_bdg_col_to);
+			set_bdg_col();
 			chrome.action.setBadgeText({
-					'text': n.toString()
-				}, ()=>{resolve();});	
+					'text': ns
 			});
+			resolve();
+		}else if(curr_bdg!==ns){
+			clearTimeout(set_bdg_col_to);
+			curr_bdg=ns;
+			chrome.action.setBadgeText({
+					'text': ns
+				}, ()=>{
+						chrome.action.setBadgeBackgroundColor({color: nw_col_bdg}).then(onSet_BadgeBackgroundColor, onSet_BadgeBackgroundColor);
+			});	
+		}else{
+			resolve();
+		}
+	});
 }
 
 function sendImg(requestDetails, msg, tid,fid) {
@@ -44,7 +80,21 @@ function start() {
 	}
 });
 
+
+async function replaceTabs(r,a){
+	return new Promise(function(resolve) {
+		ac_tab=(ac_tab===r)?a:ac_tab;
+		resolve();
+	});
+}
+
+chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
+	replaceTabs(removedTabId,addedTabId);
+});
+
 chrome.tabs.onActivated.addListener(function(activeInfo) {
+	sw_tab=true;
+	ac_tab=activeInfo.tabId;
 	chrome.tabs.sendMessage(activeInfo.tabId, {message: "cnt_this"});
 });
 
