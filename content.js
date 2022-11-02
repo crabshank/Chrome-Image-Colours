@@ -134,10 +134,12 @@ ifrm.src = "about:blank";
 setTop(getScreenHeight(true));
 
 					ifrm.ownerDocument.addEventListener("scroll", (event) => {
-						setTop(event.target.scrollingElement.scrollHeight);
+						let se=(typeof event.target.scrollingElement==='undefined')? event.target.scrollingElement : event.target;
+						setTop(se.scrollHeight);
 					}, {capture: true, passive:false});
 					ifrm.ownerDocument.addEventListener("scroll", (event) => {
-						setTop(event.target.scrollingElement.scrollHeight);
+						let se=(typeof event.target.scrollingElement==='undefined')? event.target.scrollingElement : event.target;
+						setTop(se.scrollHeight);
 					}, {capture: false, passive:false});
 
 var cvsSctTop=document.createElement('section');
