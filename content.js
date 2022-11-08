@@ -131,7 +131,6 @@ ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
 document.body.insertAdjacentElement('beforeend',ifrm);
 ifrm.src = "about:blank";
-setTop(getScreenHeight(true));
 
 					ifrm.ownerDocument.addEventListener("scroll", (event) => {
 						let se=(typeof event.target.scrollingElement==='undefined')? event.target : event.target.scrollingElement;
@@ -141,6 +140,10 @@ setTop(getScreenHeight(true));
 						let se=(typeof event.target.scrollingElement==='undefined')? event.target : event.target.scrollingElement;
 						setTop(se.scrollHeight);
 					}, {capture: false, passive:false});
+
+window.addEventListener("load", (event)=>{
+	setTop(getScreenHeight(true));
+});
 
 var cvsSctTop=document.createElement('section');
 ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
