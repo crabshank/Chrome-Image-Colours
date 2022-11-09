@@ -143,6 +143,8 @@ ifrm.src = "about:blank";
 
 window.addEventListener("load", (event)=>{
 	setTop(getScreenHeight(true));
+	document.documentElement.scrollBy(0,1);
+	document.documentElement.scrollBy(0,-1);
 });
 
 var cvsSctTop=document.createElement('section');
