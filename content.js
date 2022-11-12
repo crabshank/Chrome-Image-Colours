@@ -163,15 +163,15 @@ function clear_out(){
 	}
 }
 
-/*window.addEventListener('resize',(event)=>{
-	if(wzoom!==window.devicePixelRatio){ //page zoom
+window.addEventListener('resize',(event)=>{
+	/*if(wzoom!==window.devicePixelRatio){ //page zoom
 		wzoom=window.devicePixelRatio;
 		setTop(getScreenHeight(false)*wzoom);
 	}else{
 		setTop(getScreenHeight(true));
-	}
+	}*/
 	rsz();
-});*/
+});
 
 function setup(){
 
