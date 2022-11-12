@@ -137,7 +137,7 @@ function scr_hdl(event){
 		let se=event.target;
 		if(typeof event.target.scrollingElement==='undefined'){
 			if(event.target.nodeName==="#document"){
-				event.target.documentElement
+				se=event.target.documentElement
 			}
 		}else{
 			se=event.target.scrollingElement;
