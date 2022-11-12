@@ -142,9 +142,7 @@ ifrm.src = "about:blank";
 					}, {capture: false, passive:false});
 
 window.addEventListener("load", (event)=>{
-	setTop(getScreenHeight(true));
-	document.documentElement.scrollBy(0,1);
-	document.documentElement.scrollBy(0,-1);
+	setTimeout(()=>{setTop(document.documentElement,scrollHeight);},0);
 });
 
 var cvsSctTop=document.createElement('section');
