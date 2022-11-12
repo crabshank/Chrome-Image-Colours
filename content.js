@@ -135,7 +135,7 @@ ifrm.src = "about:blank";
 
 function scr_hdl(event){
 		let se=event.target;
-		if(typeof event.target.scrollingElement==='undefined'){
+		if(!!event.target.scrollingElement && typeof event.target.scrollingElement==='undefined'){
 			if(event.target.nodeName==="#document"){
 				se=event.target.documentElement
 			}
