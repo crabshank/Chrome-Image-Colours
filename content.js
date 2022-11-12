@@ -6,7 +6,8 @@ var fr_id=null;
 var tb_id=null;
 var to_draw=[];
 var resizeObserver=null;
-var wzoom=window.devicePixelRatio;
+var firstMut={iter:0, hgt:null};
+//var wzoom=window.devicePixelRatio;
 
 var setTop=(tp)=>{
 	let ifrmR=absBoundingClientRect(ifrm);
@@ -141,9 +142,6 @@ ifrm.src = "about:blank";
 						setTop(se.scrollHeight);
 					}, {capture: false, passive:false});
 
-window.addEventListener("load", (event)=>{
-	setTimeout(()=>{setTop(document.documentElement.scrollHeight);},0);
-});
 
 var cvsSctTop=document.createElement('section');
 ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
@@ -165,7 +163,7 @@ function clear_out(){
 	}
 }
 
-window.addEventListener('resize',(event)=>{
+/*window.addEventListener('resize',(event)=>{
 	if(wzoom!==window.devicePixelRatio){ //page zoom
 		wzoom=window.devicePixelRatio;
 		setTop(getScreenHeight(false)*wzoom);
@@ -173,7 +171,7 @@ window.addEventListener('resize',(event)=>{
 		setTop(getScreenHeight(true));
 	}
 	rsz();
-});
+});*/
 
 function setup(){
 
@@ -239,7 +237,61 @@ cvsSel.oninput=function(){
 		});
 		 resizeObserver.observe(ifrm.contentWindow.document.body);
 	}
- 
+
+if(typeof observer ==="undefined" && typeof timer ==="undefined"){
+	var timer;
+	var timer_tm=null;
+	
+	function doAdj(){
+		setTop(document.documentElement.scrollHeight);
+		timer_tm=performance.now();
+	}
+const observer = new MutationObserver((mutations) =>
+{
+	let fmf=false;
+	let dhgt=document.documentElement.scrollHeight;
+	if(firstMut.iter===0){
+		firstMut.iter=1;
+		firstMut.hgt=dhgt;
+		fmf=true;
+	}else if(firstMut.iter==1 && dhgt!==firstMut.hgt){
+				firstMut.iter=2;
+				fmf=true;
+	}
+		
+	if(timer){
+		clearTimeout(timer);
+		if(performance.now()-timer_tm>=1350 || fmf){
+			doAdj();
+		}
+	}
+	
+	if(fmf){
+		doAdj();
+	}else{
+		timer = setTimeout(() =>
+		{
+			doAdj();
+		}, 150);
+	}
+	
+	if(timer_tm ===null){
+		timer_tm=performance.now();
+	}
+});
+
+
+observer.observe(document, {
+	subtree: true,
+	childList: true,
+	attributes: true,
+	attributeOldValue: true,
+	characterData: true,
+	characterDataOldValue: true
+});
+		
+}
+
 }
 
 async function get_ids(start_up){
