@@ -126,6 +126,7 @@ function rsz(){
 }
 
 let ifrm=document.createElement('iframe');
+ifrm.style.setProperty( 'pointer-events', 'none', 'important' );
 ifrm.style.setProperty( 'visibility', 'initial', 'important' );
 ifrm.style.setProperty( 'position', 'absolute', 'important' );
 ifrm.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
@@ -185,124 +186,123 @@ window.addEventListener('resize',(event)=>{
 });
 
 function setup(){
+	//cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
+	cvsSctTop.style.setProperty( 'display', 'inline-flex', 'important' );
+	cvsSctTop.style.setProperty( 'align-items', 'flex-start', 'important' );
+	//cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
 
-//cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
-cvsSctTop.style.setProperty( 'display', 'inline-flex', 'important' );
-cvsSctTop.style.setProperty( 'align-items', 'flex-start', 'important' );
-//cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
+	cvsSct.style.setProperty('transform-origin','top left','important' );
+	cvsSct.style.setProperty( 'display', 'none', 'important' );
+	cvsSct.style.setProperty( 'flex-flow', 'wrap', 'important' );
+	cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
+	cvsSct.style.setProperty( 'background', '#121212', 'important' );
 
-cvsSct.style.setProperty('transform-origin','top left','important' );
-cvsSct.style.setProperty( 'display', 'none', 'important' );
-cvsSct.style.setProperty( 'flex-flow', 'wrap', 'important' );
-cvsSct.style.setProperty( 'align-items', 'flex-start', 'important' );
-cvsSct.style.setProperty( 'background', '#121212', 'important' );
+	cvsClr.innerText='Clear canvas';
+	cvsClr.style.setProperty( 'user-select', 'none', 'important' );
+	cvsClr.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
-cvsClr.innerText='Clear canvas';
-cvsClr.style.setProperty( 'user-select', 'none', 'important' );
-cvsClr.style.setProperty( '-webkit-user-select', 'none', 'important' );
+	cvsSel.title='Select colour to sort by';
+	//document.body.insertAdjacentHTML('beforeend', '<br style="user-select: none !important; -webkit-user-select: none !important;"><br style="user-select: none !important; -webkit-user-select: none !important;">');
+	 ifrm.contentWindow.document.body.insertAdjacentElement('beforeend', cvsSct);
+	 ifrm.style.setProperty( 'pointer-events', 'all', 'important' );
+	cvsSctTop.appendChild(cvsSel);
+	cvsSctTop.appendChild(cvsClr);
+	cvsSct.insertAdjacentElement('beforebegin', cvsSctTop);
 
-cvsSel.title='Select colour to sort by';
-//document.body.insertAdjacentHTML('beforeend', '<br style="user-select: none !important; -webkit-user-select: none !important;"><br style="user-select: none !important; -webkit-user-select: none !important;">');
- ifrm.contentWindow.document.body.insertAdjacentElement('beforeend', cvsSct);
-cvsSctTop.appendChild(cvsSel);
-cvsSctTop.appendChild(cvsClr);
-cvsSct.insertAdjacentElement('beforebegin', cvsSctTop);
+	cvsSel.style.setProperty( 'display', 'flex', 'important' );
+	cvsSel.style.setProperty( 'background-color', 'buttonface', 'important' );
+	cvsSel.style.setProperty( 'user-select', 'none', 'important' );
+	cvsSel.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
-cvsSel.style.setProperty( 'display', 'flex', 'important' );
-cvsSel.style.setProperty( 'background-color', 'buttonface', 'important' );
-cvsSel.style.setProperty( 'user-select', 'none', 'important' );
-cvsSel.style.setProperty( '-webkit-user-select', 'none', 'important' );
+	  // Loop through voices and create an option for each one
+	colNames.forEach(name => {
+		// Create option element
+		let opt = document.createElement('option');
+		opt.style.cssText='color: black;';
+		opt.textContent = name;
 
-  // Loop through voices and create an option for each one
-colNames.forEach(name => {
-    // Create option element
-    let opt = document.createElement('option');
-	opt.style.cssText='color: black;';
-    opt.textContent = name;
-
-    cvsSel.appendChild(opt);
-  });
- 
- cvsClr.onclick=function(){
-	clear_out();
- }
- 
-cvsSel.oninput=function(){
-	if(cvsSel.selectedIndex!=0){
-		for(let i=0, len=to_draw.length; i<len; i++){
-				checker(to_draw[i][0], to_draw[i][1], to_draw[i][2]);
-		}
-		to_draw=[];
-	}
-	doSort();
-}
-
- rsz();
- 
-	if(resizeObserver===null){
-		resizeObserver = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				ifrm.style.height=(entry.devicePixelContentBoxSize[0].blockSize)+'px';
-				rsz();
+		cvsSel.appendChild(opt);
+	  });
+	 
+	 cvsClr.onclick=function(){
+		clear_out();
+	 }
+	 
+	cvsSel.oninput=function(){
+		if(cvsSel.selectedIndex!=0){
+			for(let i=0, len=to_draw.length; i<len; i++){
+					checker(to_draw[i][0], to_draw[i][1], to_draw[i][2]);
 			}
-		});
-		 resizeObserver.observe(ifrm.contentWindow.document.body);
-	}
-
-if(typeof observer ==="undefined" && typeof timer ==="undefined"){
-	var timer;
-	var timer_tm=null;
-	
-	function doAdj(){
-		setTop(document.documentElement.scrollHeight);
-		timer_tm=performance.now();
-	}
-const observer = new MutationObserver((mutations) =>
-{
-	let fmf=false;
-	let dhgt=document.documentElement.scrollHeight;
-	if(firstMut.iter===0){
-		firstMut.iter=1;
-		firstMut.hgt=dhgt;
-		fmf=true;
-	}else if(firstMut.iter==1 && dhgt!==firstMut.hgt){
-				firstMut.iter=2;
-				fmf=true;
-	}
-		
-	if(timer){
-		clearTimeout(timer);
-		if(performance.now()-timer_tm>=1350 || fmf){
-			doAdj();
+			to_draw=[];
 		}
+		doSort();
 	}
-	
-	if(fmf){
-		doAdj();
-	}else{
-		timer = setTimeout(() =>
-		{
-			doAdj();
-		}, 150);
-	}
-	
-	if(timer_tm ===null){
-		timer_tm=performance.now();
-	}
-});
 
+	 rsz();
+	 
+		if(resizeObserver===null){
+			resizeObserver = new ResizeObserver((entries) => {
+				for (const entry of entries) {
+					ifrm.style.height=(entry.devicePixelContentBoxSize[0].blockSize)+'px';
+					rsz();
+				}
+			});
+			 resizeObserver.observe(ifrm.contentWindow.document.body);
+		}
 
-observer.observe(document, {
-	subtree: true,
-	childList: true,
-	attributes: true,
-	attributeOldValue: true,
-	characterData: true,
-	characterDataOldValue: true
-});
+	if(typeof observer ==="undefined" && typeof timer ==="undefined"){
+		var timer;
+		var timer_tm=null;
 		
-}
+		function doAdj(){
+			setTop(document.documentElement.scrollHeight);
+			timer_tm=performance.now();
+		}
+	const observer = new MutationObserver((mutations) =>
+	{
+		let fmf=false;
+		let dhgt=document.documentElement.scrollHeight;
+		if(firstMut.iter===0){
+			firstMut.iter=1;
+			firstMut.hgt=dhgt;
+			fmf=true;
+		}else if(firstMut.iter==1 && dhgt!==firstMut.hgt){
+					firstMut.iter=2;
+					fmf=true;
+		}
+			
+		if(timer){
+			clearTimeout(timer);
+			if(performance.now()-timer_tm>=1350 || fmf){
+				doAdj();
+			}
+		}
+		
+		if(fmf){
+			doAdj();
+		}else{
+			timer = setTimeout(() =>
+			{
+				doAdj();
+			}, 150);
+		}
+		
+		if(timer_tm ===null){
+			timer_tm=performance.now();
+		}
+	});
 
+
+	observer.observe(document, {
+		subtree: true,
+		childList: true,
+		attributes: true,
+		attributeOldValue: true,
+		characterData: true,
+		characterDataOldValue: true
+	});
+			
+	}
 }
 
 async function get_ids(start_up){
