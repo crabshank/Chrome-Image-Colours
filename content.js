@@ -91,6 +91,7 @@ function getScreenWidth(mx){
 }
 
 function rsz(){
+	try{
 		let imgs=getMatchingNodesShadow(cvsSct,'IMG',true,false);
 		for(let i=0, len=imgs.length; i<len; i++){
 			imgs[i].style.setProperty('zoom',1,'important' );
@@ -121,8 +122,7 @@ function rsz(){
 				igi.style.setProperty('zoom',s,'important' );
 			}
 		}
-
-
+	}catch(e){;}
 }
 
 let ifrm=document.createElement('iframe');
