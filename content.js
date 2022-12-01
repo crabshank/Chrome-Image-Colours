@@ -15,15 +15,18 @@ var setTop=(tp)=>{
 }
 
 function scr_hdl(event){
-		let se=event.target;
 		if(!!event.target.scrollingElement && typeof event.target.scrollingElement!=='undefined'){
-			se=event.target.scrollingElement;
+			setTop(event.target.scrollingElement.scrollHeight);
+		}else if(event.target.nodeName==="#document"){
+				setTop(event.target.documentElement.scrollHeight);
 		}else{
-			if(event.target.nodeName==="#document"){
-				se=event.target.documentElement
+			try{
+					setTop(event.target.ownerDocument.scrollingElement.scrollHeight);
+			}catch(e){
+				setTop(event.target.ownerDocument.documentElement.scrollHeight);
 			}
 		}
-		setTop(se.scrollHeight);
+		
 }
 
 
