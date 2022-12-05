@@ -207,7 +207,7 @@ function setup(){
 	cvsSel.title='Select colour to sort by';
 	//document.body.insertAdjacentHTML('beforeend', '<br style="user-select: none !important; -webkit-user-select: none !important;"><br style="user-select: none !important; -webkit-user-select: none !important;">');
 	 ifrm.contentWindow.document.body.insertAdjacentElement('beforeend', cvsSct);
-	 ifrm.style.setProperty( 'pointer-events', 'all', 'important' );
+	 ifrm.style.setProperty( 'pointer-events', 'auto', 'important' );
 	cvsSctTop.appendChild(cvsSel);
 	cvsSctTop.appendChild(cvsClr);
 	cvsSct.insertAdjacentElement('beforebegin', cvsSctTop);
