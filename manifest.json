@@ -27,7 +27,8 @@
   "permissions": ["tabs","activeTab","storage","declarativeNetRequest","declarativeNetRequestFeedback","webNavigation"],
   "action": {
     "default_icon": "icon.png",
-    "default_title": "Image colours"
+    "default_title": "Image colours",
+	 "default_popup": "index.html"
   },
   	"icons": {
         "128": "icon.png"
