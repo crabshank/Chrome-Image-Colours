@@ -8,7 +8,7 @@ var to_draw=[];
 var resizeObserver=null;
 var firstMut={iter:0, hgt:null};
 //var wzoom=window.devicePixelRatio;
-var activ=false;
+var activ=null;
 var blk=[false,[]];
 
 var setTop=(tp)=>{
@@ -169,7 +169,7 @@ var cvsSel=document.createElement('select');
 const colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks'];
 
 function clear_out(){
-	if(fr_id==0 && activ){
+	if(fr_id==0 && activ===true){
 		cvsSct.innerHTML='';
 		canvasses=[];
 		 g_ix=0;
@@ -318,7 +318,7 @@ function setup(){
 }
 
 function initSetup(){
-	if(fr_id==0 && activ){
+	if(fr_id==0 && activ===true){
 		setup();	
 		let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
 		chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
@@ -746,7 +746,7 @@ function checker(url, msg, fid){
 														cvsSct.style.setProperty( 'display', 'none', 'important' );
 													}else if(cvsSel.selectedIndex>=1){
 														cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
-														if(activ){
+														if(activ===true){
 															chrome.runtime.sendMessage({message: "cnt", count: [...cvsSct.getElementsByTagName('CANVAS')].length}, function(response) {;});
 														}
 													}
@@ -791,7 +791,7 @@ function procCanvases(){
 
 chrome.runtime.onMessage.addListener(gotMessage);
 function gotMessage(message, sender, sendResponse) {
-	if(message.message=="activate"){
+	if(message.message=="activate" && activ===null){
 		chrome.runtime.sendMessage({message: "cnt", count: 0}, function(response) {;});
 		activ=true;
 		initSetup();
