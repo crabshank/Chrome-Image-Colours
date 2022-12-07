@@ -22,6 +22,17 @@ function set_bdg_col(){
 	chrome.action.setBadgeBackgroundColor({color: og_col_bdg});
 }
 
+async function resetBdg(){
+	return new Promise((resolve)=>{
+			chrome.action.setBadgeText({
+					'text': ''
+			}, ()=>{
+				set_bdg_col();
+				resolve();
+			});
+	});
+}
+	
 async function setBdg(n){
 	return new Promise((resolve)=>{
 		
@@ -154,6 +165,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				await setBdg(request.count);
 			}
 			sendResponse({info: sender});
+	})();
+	break;	
+	case "resetBdg":
+	 (async ()=>{
+			if(ac_tab===sender.tab.id){
+				await resetBdg();
+			}
 	})();
 	break;		
 	case "get_info":

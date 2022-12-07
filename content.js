@@ -318,10 +318,13 @@ function setup(){
 }
 
 function initSetup(){
-	if(fr_id==0 && activ===true){
-		setup();	
-		let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
-		chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
+	if(fr_id==0){
+		chrome.runtime.sendMessage({message: "resetBdg"}, function(response) {;});
+		if(activ===true){
+			setup();	
+			let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
+			chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
+		}
 	}	
 }
 
@@ -331,6 +334,7 @@ async function get_ids(){
 		chrome.runtime.sendMessage({message: "get_info"}, function(response) {
 			fr_id=response.info.frameId;
 			tb_id=response.info.tab.id;
+			
 			initSetup();
 			resolve();
 		});
