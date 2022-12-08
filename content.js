@@ -11,6 +11,14 @@ var firstMut={iter:0, hgt:null};
 var activ=null;
 var blk=[false,[]];
 
+function drawAllPending(){
+	try{
+			for(let i=0, len=to_draw.length; i<len; i++){
+				checker(to_draw[i][0], to_draw[i][1], to_draw[i][2]);
+			}
+			to_draw=[];
+	}catch(e){;}
+}
 var setTop=(tp)=>{
 	let ifrmR=absBoundingClientRect(ifrm);
 	ifrm.style.top=(tp-ifrmR.height)+'px';
@@ -236,10 +244,7 @@ function setup(){
 	 
 	cvsSel.oninput=function(){
 		if(cvsSel.selectedIndex!=0){
-			for(let i=0, len=to_draw.length; i<len; i++){
-					checker(to_draw[i][0], to_draw[i][1], to_draw[i][2]);
-			}
-			to_draw=[];
+			drawAllPending();
 		}
 		doSort();
 	}
@@ -321,7 +326,7 @@ function initSetup(){
 	if(fr_id==0){
 		chrome.runtime.sendMessage({message: "resetBdg"}, function(response) {;});
 		if(activ===true){
-			setup();	
+			setup();
 			let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
 			chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
 		}
@@ -815,7 +820,13 @@ function gotMessage(message, sender, sendResponse) {
 			procCanvases();
 	}else if(message.message=="rqi"){
 			checker(message.imgSrc, message.message, message.f_id);
-	}else{
+	}else if(message.message==="detect"){
+		if(activ===null){
+			to_draw.push([message.imgSrc, message.message, message.f_id]);
+		}else{
+			checker(message.imgSrc, message.message, message.f_id);
+		}
+	}else if(activ!==null){{
 		checker(message.imgSrc, message.message, message.f_id);
 	}
 	return true; 
