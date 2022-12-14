@@ -177,14 +177,15 @@ var cvsSel=document.createElement('select');
 const colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks'];
 
 function clear_out(){
-	if(fr_id==0 && activ===true){
-		cvsSct.innerHTML='';
-		canvasses=[];
-		 g_ix=0;
+	if(fr_id==0 ){
 		to_draw=[];
-		chrome.runtime.sendMessage({message: "clr"}, function(response) {});
-		chrome.runtime.sendMessage({message: "cnt", count:0}, function(response) {});
-		rsz();
+		if{activ===true){
+			cvsSct.innerHTML='';
+			canvasses=[];
+			 g_ix=0;
+			chrome.runtime.sendMessage({message: "clr"}, function(response) {});
+			chrome.runtime.sendMessage({message: "cnt", count:0}, function(response) {});
+			rsz();
 	}
 }
 
