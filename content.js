@@ -179,13 +179,14 @@ const colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orang
 function clear_out(){
 	if(fr_id==0 ){
 		to_draw=[];
-		if{activ===true){
+		if(activ===true){
 			cvsSct.innerHTML='';
 			canvasses=[];
 			 g_ix=0;
 			chrome.runtime.sendMessage({message: "clr"}, function(response) {});
 			chrome.runtime.sendMessage({message: "cnt", count:0}, function(response) {});
 			rsz();
+		}
 	}
 }
 
