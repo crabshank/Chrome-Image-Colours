@@ -176,10 +176,13 @@ var cvsClr=document.createElement('button');
 var cvsSel=document.createElement('select');
 const colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks'];
 
-function clear_out(){
+function clear_out(r){
 	if(fr_id==0 ){
 		to_draw=[];
 		if(activ===true){
+			if(r){
+				window.location.reload(true);
+			}
 			cvsSct.innerHTML='';
 			canvasses=[];
 			 g_ix=0;
@@ -794,7 +797,7 @@ function checker(url, msg, fid){
 
 function procCanvases(){
 	if(fr_id==0){
-		clear_out();
+		clear_out(true);
 	}
 	let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
 	chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
