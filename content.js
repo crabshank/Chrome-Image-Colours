@@ -180,12 +180,10 @@ function clear_out(r){
 	if(fr_id==0 ){
 		to_draw=[];
 		if(activ===true){
-			if(r){
-				window.location.reload(true);
-			}
 			cvsSct.innerHTML='';
 			canvasses=[];
 			 g_ix=0;
+			 cvsSel.selectedIndex=0;
 			chrome.runtime.sendMessage({message: "clr"}, function(response) {});
 			chrome.runtime.sendMessage({message: "cnt", count:0}, function(response) {});
 			rsz();
@@ -797,7 +795,7 @@ function checker(url, msg, fid){
 
 function procCanvases(){
 	if(fr_id==0){
-		clear_out(true);
+		clear_out();
 	}
 	let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
 	chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
