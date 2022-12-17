@@ -21,7 +21,9 @@ function drawAllPending(){
 }
 var setTop=(tp)=>{
 	let ifrmR=absBoundingClientRect(ifrm);
-	ifrm.style.top=(tp-ifrmR.height)+'px';
+	let tps=tp-ifrmR.height;
+	tps=(tps<0)?tp:tps;
+	ifrm.style.top=tps+'px';
 }
 
 function scr_hdl(event){
