@@ -10,8 +10,6 @@ var firstMut={iter:0, hgt:null};
 //var wzoom=window.devicePixelRatio;
 var activ=null;
 var blk=[false,[]];
-let xtnd = document.createElement('div');
-xtnd.style.cssText=`clear: both !important; min-height: 0px !important; max-height: 0px !important; height: 0px !important; margin: 0px !important; padding: 0px !important; border: 0px !important;`;
 
 function drawAllPending(){
 	try{
@@ -25,8 +23,7 @@ var setTop=(tp)=>{
 	let ifrmR=[ifrm.getBoundingClientRect(),cvsSctTop.getBoundingClientRect()];
 	let ifh=[ifrmR[0].height,ifrmR[1].height];
 
-	xtnd.style.cssText=`clear: both !important; min-height: ${ifh[1]}px !important; max-height: ${ifh[1]}px !important; height: ${ifh[1]}px !important; margin: 0px !important; padding: 0px !important; border: 0px !important; top: ${tp} !important;`;
-
+	ifrm.style.paddingTop=(ifh[1])+'px';
 	ifrm.style.top=(tp-ifh[0])+'px';
 }
 
@@ -153,7 +150,6 @@ ifrm.style.setProperty( 'height', 'max-content', 'important' );
 ifrm.style.setProperty( 'width', '-webkit-fill-available', 'important' );
 ifrm.style.setProperty( 'margin', 0, 'important' );
 ifrm.style.setProperty( 'border', 0, 'important' );
-ifrm.style.setProperty( 'padding', 0, 'important' );
 ifrm.style.setProperty( 'display', 'flex', 'important' );
 ifrm.style.setProperty( 'background', 'transparent', 'important' );
 ifrm.style.setProperty( 'transform', 'translateY(0px)', 'important' );
@@ -161,8 +157,6 @@ ifrm.style.setProperty( 'transform-origin', 'left top', 'important' );
 ifrm.style.setProperty( 'user-select', 'none', 'important' );
 ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
-
-document.body.insertAdjacentElement('beforeend',xtnd);
 document.body.insertAdjacentElement('beforeend',ifrm);
 
 ifrm.src = "about:blank";
@@ -178,6 +172,13 @@ ifrm.src = "about:blank";
 
 var cvsSctTop=document.createElement('section');
 ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
+
+let ctR=cvsSctTop.getBoundingClientRect();
+ifrm.style.paddingTop=ctR.height;
+ifrm.style.setProperty( 'padding-left', 0, 'important' );
+ifrm.style.setProperty( 'padding-bottom', 0, 'important' );
+ifrm.style.setProperty( 'padding-right', 0, 'important' );
+
 
 var cvsSct=document.createElement('section');
 var cvsClr=document.createElement('button');
