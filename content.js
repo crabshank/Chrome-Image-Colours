@@ -10,6 +10,8 @@ var firstMut={iter:0, hgt:null};
 //var wzoom=window.devicePixelRatio;
 var activ=null;
 var blk=[false,[]];
+let xtnd = document.createElement('div');
+xtnd.style.cssText=`clear: both !important; min-height: 0px !important; max-height: 0px !important; height: 0px !important; margin: 0px !important; padding: 0px !important; border: 0px !important;`;
 
 function drawAllPending(){
 	try{
@@ -20,10 +22,12 @@ function drawAllPending(){
 	}catch(e){;}
 }
 var setTop=(tp)=>{
-	let ifrmR=absBoundingClientRect(ifrm);
-	let tps=tp-ifrmR.height;
-	tps=(tps<0)?tp:tps;
-	ifrm.style.top=tps+'px';
+	let ifrmR=[ifrm.getBoundingClientRect(),cvsSctTop.getBoundingClientRect()];
+	let ifh=[ifrmR[0].height,ifrmR[1].height];
+
+	xtnd.style.cssText=`clear: both !important; min-height: ${ifh[1]}px !important; max-height: ${ifh[1]}px !important; height: ${ifh[1]}px !important; margin: 0px !important; padding: 0px !important; border: 0px !important; top: ${tp} !important;`;
+
+	ifrm.style.top=(tp-ifh[0])+'px';
 }
 
 function scr_hdl(event){
@@ -158,7 +162,9 @@ ifrm.style.setProperty( 'user-select', 'none', 'important' );
 ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
 
+document.body.insertAdjacentElement('beforeend',xtnd);
 document.body.insertAdjacentElement('beforeend',ifrm);
+
 ifrm.src = "about:blank";
 
 					ifrm.ownerDocument.addEventListener("scroll", (event) => {
