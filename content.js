@@ -267,7 +267,8 @@ function setup(){
 		if(resizeObserver===null){
 			resizeObserver = new ResizeObserver((entries) => {
 				for (const entry of entries) {
-					ifrm.style.height=(entry.devicePixelContentBoxSize[0].blockSize)+'px';
+					//ifrm.style.height=(entry.devicePixelContentBoxSize[0].blockSize)+'px';
+					ifrm.style.height=(entry.target.getBoundingClientRect().height+5)+'px';
 					rsz();
 				}
 			});
