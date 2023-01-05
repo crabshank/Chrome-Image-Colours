@@ -20,11 +20,10 @@ function drawAllPending(){
 	}catch(e){;}
 }
 var setTop=(tp)=>{
-	let ifrmR=[ifrm.getBoundingClientRect(),cvsSctTop.getBoundingClientRect()];
-	let ifh=[ifrmR[0].height,ifrmR[1].height];
+	let ifrmR=ifrm.getBoundingClientRect();
+	let ifh=ifrmR.height;
 
-	ifrm.style.paddingTop=(ifh[1])+'px';
-	ifrm.style.top=(tp-ifh[0])+'px';
+	ifrm.style.top=(tp-ifh)+'px';
 }
 
 function scr_hdl(event){
@@ -114,9 +113,9 @@ function rsz(){
 		}
 		let cvsSct_styl=window.getComputedStyle(cvsSct);
 		let t=(cvsSct_styl['display']==='none')?true:false;
-		let icvsTopR=absBoundingClientRect(cvsSctTop);
+		//let icvsTopR=absBoundingClientRect(cvsSctTop);
 		//let icvsR=absBoundingClientRect(cvsSct); //image container
-		let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
+		//let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
 		ifrm.contentWindow.document.body.style.overflow='hidden';
 		ifrm.contentWindow.document.body.style.display='inline-flex';
 		ifrm.contentWindow.document.body.style.flexFlow='column';
@@ -146,7 +145,7 @@ ifrm.style.setProperty( 'pointer-events', 'none', 'important' );
 ifrm.style.setProperty( 'visibility', 'initial', 'important' );
 ifrm.style.setProperty( 'position', 'absolute', 'important' );
 ifrm.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
-ifrm.style.setProperty( 'height', 'max-content', 'important' );
+ifrm.style.setProperty( 'height', '0px', 'important' );
 ifrm.style.setProperty( 'width', '-webkit-fill-available', 'important' );
 ifrm.style.setProperty( 'margin', 0, 'important' );
 ifrm.style.setProperty( 'border', 0, 'important' );
@@ -175,10 +174,7 @@ ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
 
 let ctR=cvsSctTop.getBoundingClientRect();
 ifrm.style.paddingTop=ctR.height;
-ifrm.style.setProperty( 'padding-left', 0, 'important' );
-ifrm.style.setProperty( 'padding-bottom', 0, 'important' );
-ifrm.style.setProperty( 'padding-right', 0, 'important' );
-
+ifrm.style.setProperty( 'padding', 0, 'important' );
 
 var cvsSct=document.createElement('section');
 var cvsClr=document.createElement('button');
@@ -265,7 +261,7 @@ function setup(){
 			cvsSel.selectedIndex=1;
 			cvsSct.style.setProperty( 'display', 'flex', 'important' );
 		}
-
+	ifrm.style.setProperty( 'height', 'max-content', 'important' );
 	 rsz();
 	 
 		if(resizeObserver===null){
