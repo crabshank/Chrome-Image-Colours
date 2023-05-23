@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Image colours",
-  "version": "2023.1",
+  "version": "2023.5",
   "options_page":  "options.html",
    "background": {
      "service_worker": "background.js"

@@ -10,6 +10,7 @@ var firstMut={iter:0, hgt:null};
 //var wzoom=window.devicePixelRatio;
 var activ=null;
 var blk=[false,[]];
+var cvsUrls=[];
 
 function drawAllPending(){
 	try{
@@ -186,6 +187,7 @@ function clear_out(){
 		to_draw=[];
 		if(activ===true){
 			cvsSct.innerHTML='';
+			cvsUrls=[];
 			canvasses=[];
 			 g_ix=0;
 			chrome.runtime.sendMessage({message: "clr"}, function(response) {});
@@ -719,26 +721,15 @@ function checker(url, msg, fid){
 	if(cvsSel.selectedIndex==0){
 		to_draw.push([url, msg, fid]);
 	}else if((msg=="detect" || msg=="rqi") && fr_id==0 && cvsSel.selectedIndex>=1){
-					for(let k=0, len=url.length; k<len; k++){	
-										let i_arr=[...cvsSct.getElementsByTagName('IMG')];
-										let i_arr_m=i_arr.findIndex((i)=>{return i.getAttribute('src')===url[k];});
-
-										if(i_arr_m>=0){
-											elRemover(i_arr[i_arr_m]);
-										}
-										
+					for(let k=0, len=url.length; k<len; k++){
+						if(!cvsUrls.includes(url[k])){
 						var img = new Image();
 						img.setAttribute('crossOrigin', '');
 							img.addEventListener("load", function (e) {
 										var WIDTH =e.target.width;
 										var HEIGHT = e.target.height;
 									if(WIDTH>0 && HEIGHT >0){
-										let c_arr=[...cvsSct.getElementsByTagName('CANVAS')];
-										let c_arr_m=c_arr.findIndex((c)=>{return c.getAttribute('source_addr')===url[k];});
 
-										if(c_arr_m>=0){
-											elRemover(c_arr[c_arr_m]);
-										}
 											cvsSct.appendChild(e.target);
 											
 											e.target.onclick=(event)=>{
@@ -780,7 +771,9 @@ function checker(url, msg, fid){
 							 img.style.setProperty( 'margin-right', '0.18%', 'important' );
 							 img.style.setProperty( 'transform-origin', 'left top', 'important' );
 							 img.crossOrigin = "Anonymous";
+							 cvsUrls.push(url[k]);
 							 img.setAttribute("src", url[k]);
+					}
 			}
 			}else if(msg=="hl"){
 					try{
