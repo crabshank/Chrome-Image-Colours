@@ -769,6 +769,8 @@ function checker(url, msg, fid){
 													 getColours(canvas,canvasCtx,url_img,imge);
 
 									}
+							}else{
+								imge=null;
 							}
 							});
 
