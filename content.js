@@ -10,7 +10,7 @@ var firstMut={iter:0, hgt:null};
 //var wzoom=window.devicePixelRatio;
 var activ=null;
 var blk=[false,[]];
-var cvsUrls=[];
+var cvsUrls={src:[], drawn:[]};
 
 function drawAllPending(){
 	try{
@@ -187,7 +187,7 @@ function clear_out(){
 		to_draw=[];
 		if(activ===true){
 			cvsSct.innerHTML='';
-			cvsUrls=[];
+			cvsUrls={src:[], drawn:[]};
 			canvasses=[];
 			 g_ix=0;
 			chrome.runtime.sendMessage({message: "clr"}, function(response) {});
@@ -722,17 +722,22 @@ function checker(url, msg, fid){
 		to_draw.push([url, msg, fid]);
 	}else if((msg=="detect" || msg=="rqi") && fr_id==0 && cvsSel.selectedIndex>=1){
 					for(let k=0, len=url.length; k<len; k++){
-						if(!cvsUrls.includes(url[k])){
+						if(!cvsUrls.src.includes(url[k])){
 						var img = new Image();
+						cvsUrls.src.push([url[k]]);
 						img.setAttribute('crossOrigin', '');
 							img.addEventListener("load", function (e) {
-										var WIDTH =e.target.width;
-										var HEIGHT = e.target.height;
+								let imge=e.target;
+								let url_img= imge.getAttribute('src');
+								if(!cvsUrls.drawn.includes(url_img)){
+									cvsUrls.drawn.push(url_img);
+										var WIDTH =imge.width;
+										var HEIGHT = imge.height;
 									if(WIDTH>0 && HEIGHT >0){
 
-											cvsSct.appendChild(e.target);
+											cvsSct.appendChild(imge);
 											
-											e.target.onclick=(event)=>{
+											imge.onclick=(event)=>{
 												event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
 												chrome.runtime.sendMessage({message: "hl",url: event.target.getAttribute('src'), f_id:parseInt(event.target.getAttribute("from_frame"))}, function(response) {});
 												try{
@@ -743,12 +748,12 @@ function checker(url, msg, fid){
 											
 														canvas = document.createElement('canvas');
 														canvas.setAttribute("from_frame",fid);
-														canvas.setAttribute("source_addr",url);
+														//canvas.setAttribute("source_addr",url[k]);
 														canvasCtx = canvas.getContext("2d");
 														canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 														canvasCtx.fillStyle = 'rgb(0,0,0)';
 
-													canvasCtx.drawImage(e.target, 0, 0, WIDTH,HEIGHT);
+													canvasCtx.drawImage(imge, 0, 0, WIDTH,HEIGHT);
 													cvsSct.appendChild(canvas);
 													canvas.style.setProperty( 'display', 'none', 'important' );
 													
@@ -761,9 +766,10 @@ function checker(url, msg, fid){
 														}
 													}
 													rsz();
-													 getColours(canvas,canvasCtx,url,e.target);
+													 getColours(canvas,canvasCtx,url_img,imge);
 
 									}
+							}
 							});
 
 							  img.setAttribute("from_frame", fid);
@@ -771,7 +777,6 @@ function checker(url, msg, fid){
 							 img.style.setProperty( 'margin-right', '0.18%', 'important' );
 							 img.style.setProperty( 'transform-origin', 'left top', 'important' );
 							 img.crossOrigin = "Anonymous";
-							 cvsUrls.push(url[k]);
 							 img.setAttribute("src", url[k]);
 					}
 			}
