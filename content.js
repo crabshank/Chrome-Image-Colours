@@ -748,7 +748,7 @@ function checker(url, msg, fid){
 											
 														canvas = document.createElement('canvas');
 														canvas.setAttribute("from_frame",fid);
-														//canvas.setAttribute("source_addr",url[k]);
+														canvas.setAttribute("source_addr",url_img);
 														canvasCtx = canvas.getContext("2d");
 														canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 														canvasCtx.fillStyle = 'rgb(0,0,0)';
