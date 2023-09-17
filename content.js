@@ -5,6 +5,7 @@ var blacklist='';
 var fr_id=null;
 var tb_id=null;
 var to_draw=[];
+var maxTop=0;
 var resizeObserver=null;
 var firstMut={iter:0, hgt:null};
 //var wzoom=window.devicePixelRatio;
@@ -47,8 +48,10 @@ function drawAllPending(){
 var setTop=(tp)=>{
 	let ifrmR=ifrm.getBoundingClientRect();
 	let ifh=ifrmR.height;
-	if(tp>=ifh){
-		ifrm.style.top=(tp-ifh)+'px';
+	let ntp=tp-ifh;
+	if(ntp>maxTop){
+		maxTop=ntp;
+		ifrm.style.top=ntp+'px';
 	}
 }
 
@@ -212,6 +215,7 @@ function clear_out(){
 		to_draw=[];
 		if(activ===true){
 			cvsSct.innerHTML='';
+			maxTop=0;
 			canvasses=[];
 			 g_ix=0;
 			chrome.runtime.sendMessage({message: "clr"}, function(response) {});
