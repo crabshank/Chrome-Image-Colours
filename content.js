@@ -11,6 +11,31 @@ var firstMut={iter:0, hgt:null};
 var activ=null;
 var blk=[false,[]];
 
+function isScrollBottom(){
+		try{
+	let t = [		window?.pageYOffset,
+											window?.scrollY,
+											document?.documentElement?.scrollTop,
+											document?.body?.parentNode?.scrollTop,
+											document?.body?.scrollTop,
+											document?.head?.scrollTop,
+											0
+										].filter( (p)=>{return p>=0} );
+										
+	let y=Math.max(...t)+window.innerHeight;
+let h=[	document?.documentElement?.scrollHeight,
+				document?.body?.parentNode?.scrollHeight,
+				document?.body?.scrollHeight,
+				document?.head?.scrollHeight,
+				0
+			].filter( (p)=>{return p>=0} );
+			let g=Math.max(...h);
+			
+		return ( (Math.abs(y-g)<=1) ? true : false)
+		
+		}catch(e){return false;}
+}
+
 function drawAllPending(){
 	try{
 			for(let i=0, len=to_draw.length; i<len; i++){
@@ -22,8 +47,9 @@ function drawAllPending(){
 var setTop=(tp)=>{
 	let ifrmR=ifrm.getBoundingClientRect();
 	let ifh=ifrmR.height;
-
-	ifrm.style.top=(tp-ifh)+'px';
+	if(tp>=ifh){
+		ifrm.style.top=(tp-ifh)+'px';
+	}
 }
 
 function scr_hdl(event){
@@ -206,6 +232,7 @@ window.addEventListener('resize',(event)=>{
 });
 
 function setup(){
+	let scr=isScrollBottom();
 	//cvsSctTop.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
 	cvsSctTop.style.setProperty( 'display', 'inline-flex', 'important' );
 	cvsSctTop.style.setProperty( 'align-items', 'flex-start', 'important' );
@@ -327,6 +354,9 @@ function setup(){
 		characterDataOldValue: true
 	});
 			
+	}
+	if(scr){
+		ifrm.scrollIntoView({behavior: "auto", block: 'end', inline: 'start'});
 	}
 }
 
