@@ -208,7 +208,7 @@ ifrm.style.setProperty( 'padding', 0, 'important' );
 var cvsSct=document.createElement('section');
 var cvsClr=document.createElement('button');
 var cvsSel=document.createElement('select');
-const colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks'];
+const colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks','Average of unique colours'];
 
 function clear_out(){
 	if(fr_id==0 ){
@@ -500,7 +500,9 @@ function absBoundingClientRect(el){
 		 cvsSct.style.setProperty( 'display', 'flex', 'important' );
 	 }
 	 
-	 if (cvsSel.selectedIndex>=2){
+	if(cvsSel.selectedIndex==21){
+	 sortByArrCols(cols,[21,18,19],[-1,-1,-1]);
+ }else if (cvsSel.selectedIndex>=2){
 		   	 sortByCol(cols, cvsSel.selectedIndex-2);
  }else if(cvsSel.selectedIndex==1){
 	 sortByArrCols(cols,[20,18,19],[-1,-1,-1]);
@@ -665,9 +667,8 @@ function elRemover(el){
 
 function getDiscCol(r, g, b) {
 let h=0;
-  if (r==g && r==b) {
-   return 0;
-  } else {
+let gry=(r==g && r==b)?true:false;
+	  
 	    r /= 255, g /= 255, b /= 255;
 		let max=Math.max(r,g,b);
 		let min=Math.min(r,g,b);
@@ -678,34 +679,39 @@ let h=0;
       case b: h = (r - g) / d + 4; break;
     }
 
+if(gry){
+   return [0,Math.round(max*100)];
   }
 
-  let hue=Math.floor(h*600);
+let hue=Math.floor(h*600);
   
-if((hue>=3525)||(((hue>=0) && (hue<75)))){
- return 1;
-}else if((hue>=75) && (hue<375)){
- return 2;
-}else if((hue>=375) && (hue<675)){
- return 3;
-}else if((hue>=675) && (hue<975)){
- return 4;
-}else if((hue>=975) && (hue<1275)){
- return 5;
-}else if((hue>=1275) && (hue<1575)){
- return 6;
-}else if((hue>=1575) && (hue<1875)){
- return 7;
-}else if((hue>=1875) && (hue<2175)){
- return 8;
-}else if((hue>=2175) && (hue<2475)){
- return 9;
-}else if((hue>=2475) && (hue<3075)){
- return 10;
-}else if((hue>=3075) && (hue<3375)){
- return 11;
-}else if((hue>=3375) && (hue<3525)){
- return 12;
+if((hue>=3525)||(((hue>=0) && (hue<75)))){ 
+	return [1,Math.floor(h*120)];
+}else{
+	let hr=Math.floor(h*60);
+	if((hue>=75) && (hue<375)){
+	 return [2,hr];
+	}else if((hue>=375) && (hue<675)){
+	 return [3,hr];
+	}else if((hue>=675) && (hue<975)){
+	 return [4,hr];
+	}else if((hue>=975) && (hue<1275)){
+	 return [5,hr];
+	}else if((hue>=1275) && (hue<1575)){
+	 return [6,hr];
+	}else if((hue>=1575) && (hue<1875)){
+	 return [7,hr];
+	}else if((hue>=1875) && (hue<2175)){
+	 return [8,hr];
+	}else if((hue>=2175) && (hue<2475)){
+	 return [9,hr];
+	}else if((hue>=2475) && (hue<3075)){
+	 return [10,Math.floor(h*30)];
+	}else if((hue>=3075) && (hue<3375)){
+	 return [11,hr];
+	}else if((hue>=3375) && (hue<3525)){
+	 return [12,Math.floor(h*120)];
+	}
 }
   
   
@@ -715,7 +721,9 @@ function getColours(canvas,ctx,url,OG_img){
 try{
 g_ix=canvasses.length;
 let iRct=absBoundingClientRect(OG_img);
-var discr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,g_ix,iRct.top,iRct.left,0];
+var discr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,g_ix,iRct.top,iRct.left,0,0]; //last for unique colours
+var diffCols= [ [{},0,101], [{},0,31], [{},0,31], [{},0,31], [{},0,31], [{},0,31], [{},0,31], [{},0,31], [{},0,31], [{},0,31], [{},0,31], [{},0,31], [{},0,31] ];
+
 
 var colour_data=ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height).data;
 var pxCnt=0;
@@ -724,8 +732,19 @@ for (let p = 0, len=Math.round(4* ctx.canvas.height*ctx.canvas.width) ; p <len ;
 let r= colour_data[p];
 let g= colour_data[p+1];
 let b= colour_data[p+2];
-discr[getDiscCol(r,g,b)]++;
+let dc1=getDiscCol(r,g,b);
+let dc=dc1[0];
+discr[dc]++;
+
+let s=`${dc1[1]}`;
+if( typeof(diffCols[dc][0][s])==='undefined' ){
+	diffCols[dc][0][s]=1;
+	diffCols[dc][1]++;
+}else{
+	diffCols[dc][0][s]++;
 }
+}
+
 discr[13]=discr[11]+discr[12];
 discr[14]=discr[7]+discr[8]+discr[9];
 discr[15]=discr[4]+discr[5];
@@ -735,12 +754,19 @@ for (let i = 0; i<=16; i++){
 discr[i]=discr[i]/pxCnt;
 }
 
-for (let i = 0; i<=12; i++){
+let diffAvg=0;
+let diffCnt=0;
+
+for (let i = 0; i<=12; i++){ //loop over colours
 	if(discr[i]>0){
 		discr[20]++;
 	}
+	if( diffCols[i][1]>0 ){
+		diffAvg=( diffAvg*diffCnt+( diffCols[i][1]/diffCols[i][2] ) )/(diffCnt+1);
+		diffCnt++;
+	}
 }
-
+discr[21]=diffAvg;
 let c=discr[20];
 discr[20]=Math.sqrt(  1-(  ( (c==0)?0:c-1 )/13  )  )*( Math.sqrt( (iRct.top*iRct.top)+(iRct.left*iRct.left) + 1) );
 canvasses.push([canvas,ctx,OG_img,discr]);
