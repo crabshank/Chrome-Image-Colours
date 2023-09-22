@@ -281,10 +281,15 @@ function setup(){
 	 }
 	 
 	cvsSel.oninput=function(){
+		let z=false;
 		if(cvsSel.selectedIndex!=0){
+			z=true;
 			drawAllPending();
 		}
 		doSort();
+		if(z){
+			ifrm.scrollIntoView({behavior: "auto", block: 'start', inline: 'start'});
+		}
 	}
 		
 		if(blk[0]){
