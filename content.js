@@ -898,7 +898,7 @@ function gotMessage(message, sender, sendResponse) {
 		}else{
 			checker(message.imgSrc, message.message, message.f_id);
 		}
-	}else if(activ!==null){
+	}else if( message.message==='hl'|| activ!==null){
 		checker(message.imgSrc, message.message, message.f_id);
 	}
 	return true; 
