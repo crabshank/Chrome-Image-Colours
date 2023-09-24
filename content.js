@@ -767,10 +767,11 @@ for (let i = 0; i<=12; i++){ //loop over colours
 		discr[20]++;
 	}
 	if( diffCols[i][1]>0 ){
-		diffAvg=( diffAvg*diffCnt+( diffCols[i][1]/diffCols[i][2] ) )/(diffCnt+1);
+		diffAvg+=diffCols[i][1]/diffCols[i][2];
 		diffCnt++;
 	}
 }
+diffAvg=(diffCnt!==0)?diffAvg/diffCnt:0;
 discr[21]=diffAvg;
 let c=discr[20];
 discr[20]=Math.sqrt(  1-(  ( (c==0)?0:c-1 )/13  )  )*( Math.sqrt( (iRct.top*iRct.top)+(iRct.left*iRct.left) + 1) );
