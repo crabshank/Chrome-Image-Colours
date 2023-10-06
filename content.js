@@ -5,7 +5,7 @@ var blacklist='';
 var fr_id=null;
 var tb_id=null;
 var to_draw=[];
-var maxTop=0;
+//var maxTop=0;
 var resizeObserver=null;
 var firstMut={iter:0, hgt:null};
 //var wzoom=window.devicePixelRatio;
@@ -46,24 +46,23 @@ function drawAllPending(){
 	}catch(e){;}
 }
 var setTop=(tp)=>{
-	let ifrmR=ifrm.getBoundingClientRect();
-	let ifh=ifrmR.height;
-	let ntp=tp-ifh;
-	if(ntp>maxTop){
-		maxTop=ntp;
-		ifrm.style.top=ntp+'px';
-	}
+	ifrm.style.setProperty('display','flex','important');
+	ifrm.style.setProperty('top',(tp+'px'),'important');
 }
 
 function scr_hdl(event){
 		if(!!event.target.scrollingElement && typeof event.target.scrollingElement!=='undefined'){
+			ifrm.style.setProperty('display','none','important');
 			setTop(event.target.scrollingElement.scrollHeight);
 		}else if(event.target.nodeName==="#document"){
+				ifrm.style.setProperty('display','none','important');
 				setTop(event.target.documentElement.scrollHeight);
 		}else{
 			try{
+					ifrm.style.setProperty('display','none','important');
 					setTop(event.target.ownerDocument.scrollingElement.scrollHeight);
 			}catch(e){
+				ifrm.style.setProperty('display','none','important');
 				setTop(event.target.ownerDocument.documentElement.scrollHeight);
 			}
 		}
@@ -215,7 +214,7 @@ function clear_out(){
 		to_draw=[];
 		if(activ===true){
 			cvsSct.innerHTML='';
-			maxTop=0;
+			//maxTop=0;
 			canvasses=[];
 			 g_ix=0;
 			chrome.runtime.sendMessage({message: "clr"}, function(response) {});
@@ -228,8 +227,10 @@ function clear_out(){
 window.addEventListener('resize',(event)=>{
 	/*if(wzoom!==window.devicePixelRatio){ //page zoom
 		wzoom=window.devicePixelRatio;
+		ifrm.style.setProperty('display','none','important');
 		setTop(getScreenHeight(false)*wzoom);
 	}else{
+		ifrm.style.setProperty('display','none','important');
 		setTop(getScreenHeight(true));
 	}*/
 	rsz();
@@ -316,6 +317,7 @@ function setup(){
 		var timer_tm=null;
 		
 		function doAdj(){
+			ifrm.style.setProperty('display','none','important');
 			setTop(document.documentElement.scrollHeight);
 			timer_tm=performance.now();
 		}
