@@ -6,7 +6,6 @@ var fr_id=null;
 var tb_id=null;
 var to_draw=[];
 var resizeObserver=null;
-var firstMut={iter:0, hgt:null};
 //var wzoom=window.devicePixelRatio;
 var activ=null;
 var blk=[false,[]];
@@ -265,58 +264,6 @@ function setup(){
 			 resizeObserver.observe(ifrm.contentWindow.document.body);
 		}
 
-	if(typeof observer ==="undefined" && typeof timer ==="undefined"){
-		var timer;
-		var timer_tm=null;
-		
-		function doAdj(){
-			timer_tm=performance.now();
-		}
-	const observer = new MutationObserver((mutations) =>
-	{
-		let fmf=false;
-		let dhgt=document.documentElement.scrollHeight;
-		if(firstMut.iter===0){
-			firstMut.iter=1;
-			firstMut.hgt=dhgt;
-			fmf=true;
-		}else if(firstMut.iter==1 && dhgt!==firstMut.hgt){
-					firstMut.iter=2;
-					fmf=true;
-		}
-			
-		if(timer){
-			clearTimeout(timer);
-			if(performance.now()-timer_tm>=1350 || fmf){
-				doAdj();
-			}
-		}
-		
-		if(fmf){
-			doAdj();
-		}else{
-			timer = setTimeout(() =>
-			{
-				doAdj();
-			}, 150);
-		}
-		
-		if(timer_tm ===null){
-			timer_tm=performance.now();
-		}
-	});
-
-
-	observer.observe(document, {
-		subtree: true,
-		childList: true,
-		attributes: true,
-		attributeOldValue: true,
-		characterData: true,
-		characterDataOldValue: true
-	});
-			
-	}
 	if(scr){
 		ifrm.scrollIntoView({behavior: "auto", block: 'end', inline: 'start'});
 	}
