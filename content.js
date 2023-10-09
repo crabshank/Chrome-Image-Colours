@@ -44,34 +44,6 @@ function drawAllPending(){
 			to_draw=[];
 	}catch(e){;}
 }
-var setTop=(tp)=>{
-	ifrm.style.setProperty('display','flex','important');
-	ifrm.style.setProperty('top',(tp+'px'),'important');
-}
-
-function scr_hdl(event){
-		if(!!event.target.scrollingElement && typeof event.target.scrollingElement!=='undefined'){
-			ifrm.style.setProperty('display','none','important');
-			setTop(event.target.scrollingElement.scrollHeight);
-		}else if(event.target.nodeName==="#document"){
-				ifrm.style.setProperty('display','none','important');
-				setTop(event.target.documentElement.scrollHeight);
-		}else{
-			try{
-					ifrm.style.setProperty('display','none','important');
-					setTop(event.target.ownerDocument.scrollingElement.scrollHeight);
-			}catch(e){
-				ifrm.style.setProperty('display','none','important');
-				setTop(event.target.ownerDocument.documentElement.scrollHeight);
-			}
-		}
-		
-}
-
-
-/*window.onscroll=(event)=>{
-	 scr_hdl(event);
-}*/
 
 function getScreenHeight(mx){
 	let h=[
@@ -187,15 +159,6 @@ document.body.insertAdjacentElement('beforeend',ifrm);
 
 ifrm.src = "about:blank";
 
-					ifrm.ownerDocument.addEventListener("scroll", (event) => {
-						scr_hdl(event);			
-					}, {capture: true, passive:false});
-					
-					ifrm.ownerDocument.addEventListener("scroll", (event) => {
-						scr_hdl(event);
-					}, {capture: false, passive:false});
-
-
 var cvsSctTop=document.createElement('section');
 ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
 
@@ -223,14 +186,6 @@ function clear_out(){
 }
 
 window.addEventListener('resize',(event)=>{
-	/*if(wzoom!==window.devicePixelRatio){ //page zoom
-		wzoom=window.devicePixelRatio;
-		ifrm.style.setProperty('display','none','important');
-		setTop(getScreenHeight(false)*wzoom);
-	}else{
-		ifrm.style.setProperty('display','none','important');
-		setTop(getScreenHeight(true));
-	}*/
 	rsz();
 });
 
@@ -315,8 +270,6 @@ function setup(){
 		var timer_tm=null;
 		
 		function doAdj(){
-			ifrm.style.setProperty('display','none','important');
-			setTop(document.documentElement.scrollHeight);
 			timer_tm=performance.now();
 		}
 	const observer = new MutationObserver((mutations) =>
