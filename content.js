@@ -179,7 +179,6 @@ function deGreen(){
 				let uImg=ux[i];
 				if(uImg.getAttribute('rhl')!='true'){
 					uImg.style.setProperty( 'border', '', 'important' );
-					uImg.style.setProperty( 'border-radius', '', 'important' );
 					uImg.setAttribute('ghl',false);
 				}
 			}
@@ -717,12 +716,10 @@ function checker(url, msg, fid){
 											
 											imge.onclick=(event)=>{
 												event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
-												event.target.style.setProperty( 'border-radius', '0px', 'important' );
 												event.target.setAttribute('rhl',true);
 												chrome.runtime.sendMessage({message: "hl",url: event.target.getAttribute('src'), f_id:parseInt(event.target.getAttribute("from_frame"))}, function(response) {});
 												try{
 													OG_img.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
-													OG_img.style.setProperty( 'border-radius', '0px', 'important' );
 													OG_img.setAttribute('rhl',true);
 													OG_img.scrollIntoView();
 												}catch(e){;}
@@ -759,6 +756,7 @@ function checker(url, msg, fid){
 							 img.style.setProperty( 'margin-bottom', '0.18%', 'important' ); 
 							 img.style.setProperty( 'margin-right', '0.18%', 'important' );
 							 img.style.setProperty( 'transform-origin', 'left top', 'important' );
+							 img.style.setProperty( 'border-radius', '0%', 'important' );
 							 img.crossOrigin = "Anonymous";
 							 cvsSct.appendChild(img);
 							 img.setAttribute("og_url", url[k]);
@@ -780,7 +778,6 @@ function checker(url, msg, fid){
 											shd=true;
 										}
 										cviF[i].style.setProperty(  'border', 'red 0.3ch outset', 'important' );
-										cviF[i].style.setProperty( 'border-radius', '0px', 'important' );
 										cviF[i].scrollIntoView();
 									}
 								}
@@ -834,7 +831,6 @@ function gotMessage(message, sender, sendResponse) {
 				let uImg=us[ux];
 				if(uImg.getAttribute('rhl')!='true'){
 					uImg.style.setProperty( 'border', 'hsl(103deg 100% 50%) 0.3ch outset', 'important' );
-					uImg.style.setProperty( 'border-radius', '0px', 'important' );
 				}
 				uImg.setAttribute('ghl',true);
 				uImg.scrollIntoView();
