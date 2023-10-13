@@ -1,4 +1,5 @@
 try {
+var ext_id=chrome.runtime.id;
 var addrs=[];
 var tbs=[];
 var ac_tab=null;
@@ -69,7 +70,7 @@ async function setBdg(n){
 }
 
 function sendImg(requestDetails, msg, tid,fid) {
-	if(msg=="hl"){
+	if(msg==="jmp" || msg==="hl"){
 		chrome.tabs.sendMessage(tid, {message: msg, imgSrc: requestDetails, f_id: fid});
 	}else if(msg=="detect"){
 		let filt=addrs.filter((adr)=>{return (adr.tabId==requestDetails.tabId && adr.url==requestDetails.url);});
@@ -134,6 +135,20 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 		}
 });
 	
+
+let mId="jmp_"+ext_id;
+let contexts = ["image"];
+chrome.contextMenus.create({
+	"title": "Jump to image in iFrame (Image Colours)",
+	"contexts": contexts,
+	"id": mId
+})
+
+chrome.contextMenus.onClicked.addListener((info,tab) => {
+	if(info.menuItemId===mId){
+		sendImg(info.srcUrl, "jmp",tab.id,info.frameId);
+	}
+});
 
 chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info)=>{
 	if(info.request.tabId>=0){

@@ -170,6 +170,23 @@ var cvsClr=document.createElement('button');
 var cvsSel=document.createElement('select');
 const colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks','Average of unique colours'];
 
+function deGreen(){
+	if(fr_id===0){
+		let us=[...cvsSct.getElementsByTagName('IMG')];
+		let ux=us.filter((i)=>{return i.getAttribute('ghl')=='true'});
+		if(ux.length>0){
+			for(let i=0, len=ux.length;  i<len; i++){
+				let uImg=ux[i];
+				if(uImg.getAttribute('rhl')!='true'){
+					uImg.style.setProperty( 'border', '', 'important' );
+					uImg.style.setProperty( 'border-radius', '', 'important' );
+					uImg.setAttribute('ghl',false);
+				}
+			}
+		}
+	}
+}
+
 function clear_out(){
 	if(fr_id==0 ){
 		to_draw=[];
@@ -700,9 +717,13 @@ function checker(url, msg, fid){
 											
 											imge.onclick=(event)=>{
 												event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
+												event.target.style.setProperty( 'border-radius', '0px', 'important' );
+												event.target.setAttribute('rhl',true);
 												chrome.runtime.sendMessage({message: "hl",url: event.target.getAttribute('src'), f_id:parseInt(event.target.getAttribute("from_frame"))}, function(response) {});
 												try{
 													OG_img.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
+													OG_img.style.setProperty( 'border-radius', '0px', 'important' );
+													OG_img.setAttribute('rhl',true);
 													OG_img.scrollIntoView();
 												}catch(e){;}
 											};
@@ -749,12 +770,18 @@ function checker(url, msg, fid){
 						var cvi=(fr_id==0)?[...cvsSct.getElementsByTagName('IMG')]:[];
 						var all_i=getMatchingNodesShadow(document,'IMG',true,false);
 						var cviF=all_i.filter((i)=>{return !cvi.includes(i);});
+						let shd=false;
 						for(let k=0, len=url.length; k<len; k++){
 								for (let i=0, len_i=cviF.length; i<len_i; i++){
 									let s=(cviF[i].src==='')?cviF[i].currentSrc:cviF[i].src;
 									if(s===url){
-										cviF[i].scrollIntoView();
+										if(shd===false){
+											deGreen();
+											shd=true;
+										}
 										cviF[i].style.setProperty(  'border', 'red 0.3ch outset', 'important' );
+										cviF[i].style.setProperty( 'border-radius', '0px', 'important' );
+										cviF[i].scrollIntoView();
 									}
 								}
 						}
@@ -797,6 +824,21 @@ function gotMessage(message, sender, sendResponse) {
 			to_draw.push([message.imgSrc, message.message, message.f_id]);
 		}else{
 			checker(message.imgSrc, message.message, message.f_id);
+		}
+	}else if( message.message==='jmp'){
+		if(fr_id===0 && window.getComputedStyle(cvsSct)['display']!=='none'){
+			let us=[...cvsSct.getElementsByTagName('IMG')];
+			let ux=us.findIndex((i)=>{return i.getAttribute('og_url')===message.imgSrc});
+			if(ux>=0){
+				deGreen();
+				let uImg=us[ux];
+				if(uImg.getAttribute('rhl')!='true'){
+					uImg.style.setProperty( 'border', 'hsl(103deg 100% 50%) 0.3ch outset', 'important' );
+					uImg.style.setProperty( 'border-radius', '0px', 'important' );
+				}
+				uImg.setAttribute('ghl',true);
+				uImg.scrollIntoView();
+			}
 		}
 	}else if( message.message==='hl'|| activ!==null){
 		checker(message.imgSrc, message.message, message.f_id);
