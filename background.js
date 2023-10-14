@@ -139,7 +139,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 let mId="jmp_"+ext_id;
 let contexts = ["image"];
 chrome.contextMenus.create({
-	"title": "Jump to image in iFrame (Image Colours)",
+	"title": "Jump to image in iFrame (Image colours)",
 	"contexts": contexts,
 	"id": mId
 })
