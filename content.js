@@ -1,4 +1,5 @@
-var chg = {u:window.location.href, c:0};
+var chg={u:window.location.href, c:0};
+chg_recs={};
 var canvasses=[];
 var g_ix=0;
 var blacklist='';
@@ -223,8 +224,8 @@ function setup(){
 
 	cvsSel.title='Select colour to sort by';
 	//document.body.insertAdjacentHTML('beforeend', '<br style="user-select: none !important; -webkit-user-select: none !important;"><br style="user-select: none !important; -webkit-user-select: none !important;">');
-	 ifrm.contentWindow.document.body.insertAdjacentElement('beforeend', cvsSct);
-	 ifrm.style.setProperty( 'pointer-events', 'auto', 'important' );
+	ifrm.contentWindow.document.body.insertAdjacentElement('beforeend', cvsSct);
+	ifrm.style.setProperty( 'pointer-events', 'auto', 'important' );
 	cvsSctTop.appendChild(cvsSel);
 	cvsSctTop.appendChild(cvsClr);
 	cvsSct.insertAdjacentElement('beforebegin', cvsSctTop);
@@ -254,6 +255,7 @@ function setup(){
 		if(cvsSel.selectedIndex!=0){
 			z=true;
 			drawAllPending();
+			chrome.runtime.sendMessage({message: "nav_0_noClear"}, function(response) {;});
 		}
 		doSort();
 		if(z){
@@ -299,10 +301,10 @@ function initSetup(){
 async function get_ids(){
 	return new Promise(function(resolve, reject) {
 		restore_options();
-		chrome.runtime.sendMessage({message: "get_info"}, function(response) {
+		chrome.runtime.sendMessage({message: "get_info", chg:chg}, function(response) {
 			fr_id=response.info.frameId;
 			tb_id=response.info.tab.id;
-			
+			chg_recs[(fr_id).toString()]=chg;
 			initSetup();
 			resolve();
 		});
@@ -804,8 +806,8 @@ function checker(url, msg, fid){
 			}
 }
 
-function procCanvases(){
-	if(fr_id==0){
+function procCanvases(skip_clear){
+	if(fr_id==0 && skip_clear!==true){
 		clear_out();
 	}
 	let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
@@ -818,13 +820,21 @@ function gotMessage(message, sender, sendResponse) {
 		chrome.runtime.sendMessage({message: "cnt", count: 0}, function(response) {;});
 		activ=true;
 		initSetup();
+	}else if(message.message=="chg"){
+		if(message.snd.frameId===fr_id && (chg_recs[message.frs].u!==chg.u || chg.c===0) ){
+				chg.u=window.location.href;
+				chg.c+=1;
+				chg_recs[message.frs]=chg; // store frame url
+				chrome.runtime.sendMessage({message: "nav_0"}, function(response) {;});
+		}
 	}else if(message.message=="rep_tb"){
 		(async ()=>{ await get_ids(); })();
 	}else if(message.message=="nav"){
-		if(message.f_id===fr_id && ((chg.c==0) || (window.location.href!==chg.u && chg.c>0))){
-			chrome.runtime.sendMessage({message: "nav_0",old_url: chg.u, new_url: window.location.href}, function(response) {});
-			chg.u=window.location.href;
-			chg.c++;
+		let mIfd=message.f_id;
+		let mIfd_s=(mIfd).toString();
+		if(mIfd===fr_id){
+					chrome.runtime.sendMessage({message: "get_info", chg:window.location.href}, function(response) {;}); // send updated frame url
+					//chrome.runtime.sendMessage({message: "nav_0"}, function(response) {;});
 		}
 	}else if(message.message=="cnt_this"){
 		if(fr_id===0 && activ){
@@ -832,6 +842,8 @@ function gotMessage(message, sender, sendResponse) {
 		}
 	}else if(message.message=="nav_0"){
 			procCanvases();
+	}else if(message.message=="nav_0_noClear"){
+			procCanvases(true);
 	}else if(message.message=="rqi"){
 			checker(message.imgSrc, message.message, message.f_id);
 	}else if(message.message==="detect"){

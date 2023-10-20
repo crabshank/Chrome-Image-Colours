@@ -190,9 +190,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	})();
 	break;		
 	case "get_info":
-		sendResponse({info: sender});
+		sendResponse({info: sender}); // send to querying frame (response)
+		chrome.tabs.sendMessage(sender.tab.id, {message: "chg", chg:request.chg, snd:sender, frs: (sender.frameId).toString()}); //send to all frames
 	break;	
 	case "nav_0":
+		addrs_rt(sender.tab.id);
+		chrome.tabs.sendMessage(sender.tab.id, {message: request.message});
+		sendResponse({response: "Message received"});
+	break;	
+	case "nav_0_noClear":
 		addrs_rt(sender.tab.id);
 		chrome.tabs.sendMessage(sender.tab.id, {message: request.message});
 		sendResponse({response: "Message received"});
