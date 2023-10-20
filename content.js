@@ -1,4 +1,3 @@
-var chg={u:window.location.href, c:0};
 chg_recs={};
 var canvasses=[];
 var g_ix=0;
@@ -301,10 +300,12 @@ function initSetup(){
 async function get_ids(){
 	return new Promise(function(resolve, reject) {
 		restore_options();
-		chrome.runtime.sendMessage({message: "get_info", chg:chg}, function(response) {
+		chrome.runtime.sendMessage({message: "get_info", chg:window.location.href}, function(response) {
 			fr_id=response.info.frameId;
 			tb_id=response.info.tab.id;
-			chg_recs[(fr_id).toString()]=chg;
+			if(fr_id===0){
+				chg_recs[(fr_id).toString()]=window.location.href;
+			}
 			initSetup();
 			resolve();
 		});
@@ -821,11 +822,10 @@ function gotMessage(message, sender, sendResponse) {
 		activ=true;
 		initSetup();
 	}else if(message.message=="chg"){
-		if(message.snd.frameId===fr_id && (chg_recs[message.frs].u!==chg.u || chg.c===0) ){
-				chg.u=window.location.href;
-				chg.c+=1;
-				chg_recs[message.frs]=chg; // store frame url
-				chrome.runtime.sendMessage({message: "nav_0"}, function(response) {;});
+		if(fr_id===0 && chg_recs[message.frs]!==message.chg){
+				let msg=(typeof(chg_recs[message.frs])!=='undefined')?"nav_0":"nav_0_noClear";
+				chg_recs[message.frs]=message.chg; // store frame url
+				chrome.runtime.sendMessage({message:msg}, function(response) {;});
 		}
 	}else if(message.message=="rep_tb"){
 		(async ()=>{ await get_ids(); })();
@@ -833,8 +833,7 @@ function gotMessage(message, sender, sendResponse) {
 		let mIfd=message.f_id;
 		let mIfd_s=(mIfd).toString();
 		if(mIfd===fr_id){
-					chrome.runtime.sendMessage({message: "get_info", chg:window.location.href}, function(response) {;}); // send updated frame url
-					//chrome.runtime.sendMessage({message: "nav_0"}, function(response) {;});
+			chrome.runtime.sendMessage({message: "get_info", chg:window.location.href}, function(response) {;}); // send updated frame url
 		}
 	}else if(message.message=="cnt_this"){
 		if(fr_id===0 && activ){
