@@ -822,17 +822,17 @@ function gotMessage(message, sender, sendResponse) {
 		activ=true;
 		initSetup();
 	}else if(message.message=="chg"){
-		if(fr_id===0 && chg_recs[message.frs]!==message.chg){
-				let msg=(typeof(chg_recs[message.frs])!=='undefined')?"nav_0":"nav_0_noClear";
-				chg_recs[message.frs]=message.chg; // store frame url
+		let mfs=message.frs;
+		let mcg=message.chg;
+		if(fr_id===0 && chg_recs[mfs]!==mcg){
+				let msg=(typeof(chg_recs[mfs])!=='undefined')?"nav_0":"nav_0_noClear";
+				chg_recs[mfs]=mcg; // store frame url
 				chrome.runtime.sendMessage({message:msg}, function(response) {;});
 		}
 	}else if(message.message=="rep_tb"){
 		(async ()=>{ await get_ids(); })();
 	}else if(message.message=="nav"){
-		let mIfd=message.f_id;
-		let mIfd_s=(mIfd).toString();
-		if(mIfd===fr_id){
+		if(message.f_id===fr_id){
 			chrome.runtime.sendMessage({message: "get_info", chg:window.location.href}, function(response) {;}); // send updated frame url
 		}
 	}else if(message.message=="cnt_this"){
