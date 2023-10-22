@@ -194,10 +194,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		chrome.tabs.sendMessage(sender.tab.id, {message: "chg", chg:request.chg, snd:sender, frs: (sender.frameId).toString()}); //send to all frames
 	break;	
 	case "nav_0":
-		addrs_rt(sender.tab.id);
-		chrome.tabs.sendMessage(sender.tab.id, {message: request.message});
-		sendResponse({response: "Message received"});
-	break;	
 	case "nav_0_noClear":
 		addrs_rt(sender.tab.id);
 		chrome.tabs.sendMessage(sender.tab.id, {message: request.message});
