@@ -116,9 +116,10 @@ function rsz(skp){
 		//let icvsR=absBoundingClientRect(cvsSct); //image container
 		//let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
 		if(skp!==true){
-			if(Math.abs(absBoundingClientRect(ifrm).bottom - document?.documentElement?.scrollHeight)>1 ){
+			let ifrmR=absBoundingClientRect(ifrm);
+			if(Math.abs(ifrmR.bottom - document?.documentElement?.scrollHeight)>1 ){
 				out=true;
-				let sch=parseFloat(window.innerHeight)-(absBoundingClientRect(ifrm).top);
+				let sch=parseFloat(window.innerHeight)-(ifrmR.top);
 				ifrm.style.setProperty('top',`${sch*0.18}px`,'important');
 				sch*=0.9964;
 				ifrm.style.setProperty('max-height',`${sch}px`,'important');
