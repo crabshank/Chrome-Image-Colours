@@ -299,7 +299,7 @@ function setup(){
 			resizeObserver = new ResizeObserver((entries) => {
 				for (const entry of entries) {
 					//ifrm.style.height=(entry.devicePixelContentBoxSize[0].blockSize)+'px';
-					let iab=(ifrm.getAttribute('isAboveBtm')!='true')?true:false;
+					let iab=(ifrm.getAttribute('isAboveBtm')=='true')?true:false;
 					rsz(false,iab);
 					if(!iab){
 						ifrm.style.height=(entry.target.getBoundingClientRect().height+5)+'px';
