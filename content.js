@@ -103,7 +103,8 @@ function getScreenWidth(mx){
 			}
 }
 
-function rsz(){
+function rsz(skp){
+	let out=false;
 	try{
 		let imgs=getMatchingNodesShadow(cvsSct,'IMG',true,false);
 		for(let i=0, len=imgs.length; i<len; i++){
@@ -114,7 +115,29 @@ function rsz(){
 		//let icvsTopR=absBoundingClientRect(cvsSctTop);
 		//let icvsR=absBoundingClientRect(cvsSct); //image container
 		//let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
-		ifrm.contentWindow.document.body.style.overflow='hidden';
+		if(skp!==true){
+			if(Math.abs(absBoundingClientRect(ifrm).bottom - document?.documentElement?.scrollHeight)>1 ){
+				out=true;
+				let sch=parseFloat(window.innerHeight)-(absBoundingClientRect(ifrm).top);
+				ifrm.style.setProperty('top',`${sch*0.18}px`,'important');
+				sch*=0.9964;
+				ifrm.style.setProperty('max-height',`${sch}px`,'important');
+				ifrm.style.setProperty('min-height',`${sch}px`,'important');
+				ifrm.style.setProperty('height',`${sch}px`,'important');
+				ifrm.contentWindow.document.body.style.overflow='hidden';
+				ifrm.contentWindow.document.body.style.overflowX='hidden';
+				ifrm.contentWindow.document.body.style.overflowY='scroll';
+			}else{
+				ifrm.style.setProperty('top','');
+				ifrm.style.setProperty('max-height','');
+				ifrm.style.setProperty('min-height','');
+				//ifrm.style.setProperty('height','max-content');
+				ifrm.contentWindow.document.body.style.overflow='hidden';
+				ifrm.contentWindow.document.body.style.overflowY='hidden';
+			}
+		}else{
+			ifrm.contentWindow.document.body.style.overflow='hidden';
+		}
 		ifrm.contentWindow.document.body.style.display='inline-flex';
 		ifrm.contentWindow.document.body.style.flexFlow='column';
 		ifrm.contentWindow.document.body.style.background='transparent';
@@ -136,6 +159,7 @@ function rsz(){
 			}
 		}
 	}catch(e){;}
+	return out;
 }
 
 let ifrm=document.createElement('iframe');
@@ -268,14 +292,16 @@ function setup(){
 			cvsSct.style.setProperty( 'display', 'flex', 'important' );
 		}
 	ifrm.style.setProperty( 'height', 'max-content', 'important' );
-	 rsz();
+	 rsz(true);
 	 
 		if(resizeObserver===null){
 			resizeObserver = new ResizeObserver((entries) => {
 				for (const entry of entries) {
 					//ifrm.style.height=(entry.devicePixelContentBoxSize[0].blockSize)+'px';
-					ifrm.style.height=(entry.target.getBoundingClientRect().height+5)+'px';
-					rsz();
+					let isAboveBtm=rsz();
+					if(isAboveBtm===false){
+						ifrm.style.height=(entry.target.getBoundingClientRect().height+5)+'px';
+					}
 				}
 			});
 			 resizeObserver.observe(ifrm.contentWindow.document.body);
