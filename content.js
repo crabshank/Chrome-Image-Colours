@@ -115,8 +115,37 @@ function rsz(skp,iab){
 		//let icvsR=absBoundingClientRect(cvsSct); //image container
 		//let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
 		if(skp!==true){
-			let ifrmR=absBoundingClientRect(ifrm);
-			if(Math.abs(ifrmR.bottom - document?.documentElement?.scrollHeight)>1 || iab===true ){
+		
+		let ifrmR=absBoundingClientRect(ifrm);
+		let atBtm=true;
+		if(iab!==true){
+			atBtm=false;
+			let h=[
+				document?.documentElement?.scrollHeight,
+				document?.body?.scrollHeight,
+				document?.head?.scrollHeight,
+				window.screen.availHeight,
+				window.screen.height,
+				window.innerHeight,
+				window.outerHeight,
+				document?.documentElement?. clientHeight,
+				document?.body?. clientHeight,
+				document?.head?. clientHeight,
+				document?.documentElement?. offsetHeight,
+				document?.body?. offsetHeight,
+				document?.head?. offsetHeight
+			];
+			
+			h=h.filter( (g)=>{return g>0} );
+				let ifb=ifrmR.bottom;
+				for(let k=0, len_k=h.length; k<len_k;k++){
+					if(Math.abs(ifb - h[k])<1){
+						atBtm=true;
+						break;
+					}
+				}
+			}
+			if( atBtm===false ||  iab===true ){
 				if(iab!==true){
 					ifrm.setAttribute('isAboveBtm','true');
 				}
