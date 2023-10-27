@@ -103,8 +103,7 @@ function getScreenWidth(mx){
 			}
 }
 
-function rsz(skp){
-	let out=false;
+function rsz(skp,iab){
 	try{
 		let imgs=getMatchingNodesShadow(cvsSct,'IMG',true,false);
 		for(let i=0, len=imgs.length; i<len; i++){
@@ -117,8 +116,10 @@ function rsz(skp){
 		//let ifrmdR=absBoundingClientRect(ifrm.contentWindow.document.documentElement);
 		if(skp!==true){
 			let ifrmR=absBoundingClientRect(ifrm);
-			if(Math.abs(ifrmR.bottom - document?.documentElement?.scrollHeight)>1 ){
-				out=true;
+			if(Math.abs(ifrmR.bottom - document?.documentElement?.scrollHeight)>1 || iab===true ){
+				if(iab!==true){
+					ifrm.setAttribute('isAboveBtm','true');
+				}
 				let sch=parseFloat(window.innerHeight)-(ifrmR.top);
 				ifrm.style.setProperty('top',`${sch*0.18}px`,'important');
 				sch*=0.9964;
@@ -160,7 +161,6 @@ function rsz(skp){
 			}
 		}
 	}catch(e){;}
-	return out;
 }
 
 let ifrm=document.createElement('iframe');
@@ -299,8 +299,9 @@ function setup(){
 			resizeObserver = new ResizeObserver((entries) => {
 				for (const entry of entries) {
 					//ifrm.style.height=(entry.devicePixelContentBoxSize[0].blockSize)+'px';
-					let isAboveBtm=rsz();
-					if(isAboveBtm===false){
+					let iab=(ifrm.getAttribute('isAboveBtm')!='true')?true:false;
+					rsz(false,iab);
+					if(!iab){
 						ifrm.style.height=(entry.target.getBoundingClientRect().height+5)+'px';
 					}
 				}
