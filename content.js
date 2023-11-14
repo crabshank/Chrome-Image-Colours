@@ -221,10 +221,6 @@ let ht=`<html>
 </head>
 	
 <body>
-
-<script>
-</script>
-
 </body>
 
 </html>`;
