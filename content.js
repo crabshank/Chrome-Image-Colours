@@ -155,16 +155,13 @@ function rsz(skp,iab){
 				ifrm.style.setProperty('max-height',`${sch}px`,'important');
 				ifrm.style.setProperty('min-height',`${sch}px`,'important');
 				ifrm.style.setProperty('height',`${sch}px`,'important');
-				ifrm.contentWindow.document.body.style.overflow='hidden';
-				ifrm.contentWindow.document.body.style.overflowX='hidden';
-				ifrm.contentWindow.document.body.style.overflowY='scroll';
+				ifrm.contentWindow.document.body.style.overflow='scroll';
 			}else{
 				ifrm.style.setProperty('top','');
 				ifrm.style.setProperty('max-height','');
 				ifrm.style.setProperty('min-height','');
 				//ifrm.style.setProperty('height','max-content');
 				ifrm.contentWindow.document.body.style.overflow='hidden';
-				ifrm.contentWindow.document.body.style.overflowY='hidden';
 			}
 		}else{
 			ifrm.contentWindow.document.body.style.overflow='hidden';
@@ -211,6 +208,32 @@ ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 document.body.insertAdjacentElement('beforeend',ifrm);
 
 ifrm.src = "about:blank";
+
+let ht=`<html>
+
+<head>
+<meta charset="utf-8">
+<style>
+::-webkit-scrollbar {
+    display: none;
+}
+</style>
+</head>
+	
+<body>
+
+<script>
+</script>
+
+</body>
+
+</html>`;
+
+ifrm.contentWindow.document.open();
+ifrm.contentWindow.document.write(ht);
+ifrm.contentWindow.document.close();
+
+let style_tag=ifrm.contentWindow.document.head.firstChild;
 
 var cvsSctTop=document.createElement('section');
 ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
