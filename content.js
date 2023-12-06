@@ -149,7 +149,7 @@ function rsz(skp,iab){
 				if(iab!==true){
 					ifrm.setAttribute('isAboveBtm','true');
 				}
-				let sch=parseFloat(window.innerHeight)-(ifrmR.top);
+				let sch=parseFloat(document.documentElement.scrollHeight)-(ifrmR.top);
 				ifrm.style.setProperty('top',`${sch*0.18}px`,'important');
 				sch*=0.9964;
 				ifrm.style.setProperty('max-height',`${sch}px`,'important');
@@ -157,9 +157,9 @@ function rsz(skp,iab){
 				ifrm.style.setProperty('height',`${sch}px`,'important');
 				ifrm.contentWindow.document.body.style.overflow='scroll';
 			}else{
-				ifrm.style.setProperty('top','');
-				ifrm.style.setProperty('max-height','');
-				ifrm.style.setProperty('min-height','');
+				ifrm.style.setProperty('top','','important');
+				ifrm.style.setProperty('max-height','','important');
+				ifrm.style.setProperty('min-height','','important');
 				//ifrm.style.setProperty('height','max-content');
 				ifrm.contentWindow.document.body.style.overflow='hidden';
 			}
@@ -173,7 +173,7 @@ function rsz(skp,iab){
 
 		let sw=getScreenWidth(false);
 		let swm8=sw-8;
-		ifrm.style.width=(sw)+'px'; //set to sw
+		ifrm.style.setProperty('width',sw,'important');
 		cvsSct.style.width=(sw)+'px'; //set to sw
 		
 		let iw8s=swm8*0.995;
@@ -190,6 +190,7 @@ function rsz(skp,iab){
 }
 
 let ifrm=document.createElement('iframe');
+ifrm.style.setProperty( 'all', 'initial', 'important' );
 ifrm.style.setProperty( 'pointer-events', 'none', 'important' );
 ifrm.style.setProperty( 'visibility', 'initial', 'important' );
 ifrm.style.setProperty( 'position', 'absolute', 'important' );
@@ -207,7 +208,7 @@ ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
 document.body.insertAdjacentElement('beforeend',ifrm);
 
-ifrm.src = "about:blank";
+//ifrm.src = "";
 
 let ht=`<html>
 
@@ -235,7 +236,7 @@ var cvsSctTop=document.createElement('section');
 ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
 
 let ctR=cvsSctTop.getBoundingClientRect();
-ifrm.style.paddingTop=ctR.height;
+ifrm.style.setProperty('padding-top',ctR.height,'important');
 ifrm.style.setProperty( 'padding', 0, 'important' );
 
 var cvsSct=document.createElement('section');
@@ -350,7 +351,7 @@ function setup(){
 					let iab=(ifrm.getAttribute('isAboveBtm')=='true')?true:false;
 					rsz(false,iab);
 					if(!iab){
-						ifrm.style.height=(entry.target.getBoundingClientRect().height+5)+'px';
+						ifrm.style.setProperty('height',(entry.target.getBoundingClientRect().height+5)+'px','important');
 					}
 				}
 			});
