@@ -9,6 +9,7 @@ var resizeObserver=null;
 //var wzoom=window.devicePixelRatio;
 var activ=null;
 var blk=[false,[]];
+var firstImgs=false;
 
 function isScrollBottom(){
 		try{
@@ -304,6 +305,7 @@ function setup(){
 	cvsSct.insertAdjacentElement('beforebegin', cvsSctTop);
 
 	cvsSel.style.setProperty( 'display', 'flex', 'important' );
+	firstImgs=true;
 	cvsSel.style.setProperty( 'background-color', 'buttonface', 'important' );
 	cvsSel.style.setProperty( 'user-select', 'none', 'important' );
 	cvsSel.style.setProperty( '-webkit-user-select', 'none', 'important' );
@@ -898,6 +900,13 @@ function gotMessage(message, sender, sendResponse) {
 		chrome.runtime.sendMessage({message: "cnt", count: 0}, function(response) {;});
 		activ=true;
 		initSetup();
+	}else if(message.message=="activate" && firstImgs===true){
+		let d=window.getComputedStyle(ifrm)['visibility'];
+		if(d==='hidden'){
+			ifrm.style.setProperty('visibility','visible','important');
+		}else{
+			ifrm.style.setProperty('visibility','hidden','important');
+		}
 	}else if(message.message=="chg"){
 		let mfs=message.frs;
 		let mcg=message.chg;

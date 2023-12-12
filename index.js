@@ -15,3 +15,4 @@
 
   }
   	send("activate");
+	setTimeout(()=>{window.close();},400);
