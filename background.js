@@ -1,4 +1,23 @@
 try {
+	
+async function createOffscreen() {
+  await chrome.offscreen.createDocument({
+	url: 'offscreen.html',
+	reasons: ['BLOBS'],
+	justification: 'Keep service worker running',
+  }).catch(() => {});
+}
+
+function createOffscreen2() {
+	if(createOffscreen!==null){
+		createOffscreen();
+		createOffscreen=null;
+	}
+}
+
+chrome.runtime.onStartup.addListener(createOffscreen2);
+createOffscreen2();
+
 var ext_id=chrome.runtime.id;
 var addrs=[];
 var tbs=[];

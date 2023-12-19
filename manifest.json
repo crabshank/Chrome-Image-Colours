@@ -24,7 +24,7 @@
       }
     ]
   },
-  "permissions": ["tabs","activeTab","storage","declarativeNetRequest","declarativeNetRequestFeedback","webNavigation","contextMenus"],
+  "permissions": ["tabs","activeTab","storage","declarativeNetRequest","declarativeNetRequestFeedback","webNavigation","contextMenus", "offscreen"],
   "action": {
     "default_icon": "icon.png",
     "default_title": "Image colours",
