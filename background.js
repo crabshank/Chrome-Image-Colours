@@ -90,12 +90,16 @@ async function setBdg(n){
 
 function sendImg(requestDetails, msg, tid,fid) {
 	if(msg==="jmp" || msg==="hl"){
-		chrome.tabs.sendMessage(tid, {message: msg, imgSrc: requestDetails, f_id: fid});
+		try{
+				chrome.tabs.sendMessage(tid, {message: msg, imgSrc: requestDetails, f_id: fid});
+			}catch(e){;}
 	}else if(msg=="detect"){
 		let filt=addrs.filter((adr)=>{return (adr.tabId==requestDetails.tabId && adr.url==requestDetails.url);});
 		if(filt.length==0){
-			chrome.tabs.sendMessage(tid, {message: msg, imgSrc: [requestDetails.url], f_id: fid});
-			addrs.push(requestDetails);
+			try{
+				chrome.tabs.sendMessage(tid, {message: msg, imgSrc: [requestDetails.url], f_id: fid});
+				addrs.push(requestDetails);
+			}catch(e){;}
 		}
 	}
 }
@@ -106,7 +110,9 @@ function start() {
 	for (let i = 0, len = addrs.length; i<len; i++){
 		if(addrs[i].tabId==removedTabId){
 			addrs[i].tabId=addedTabId;
-			chrome.tabs.sendMessage(addedTabId, {message: "rep_tb"});
+			try{
+				chrome.tabs.sendMessage(addedTabId, {message: "rep_tb"});
+			}catch(e){;}
 		}
 	}
 });
@@ -175,10 +181,12 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info)=>{
 		tabId: info.request.tabId,
 		frameId: info.request.frameId
 		}, function (frameInfo){
-				  chrome.tabs.sendMessage(info.request.tabId, {message: "nav", url:frameInfo.url, f_id: info.request.frameId});
-				 if(info.request.type==='image'){
-						sendImg(info.request, "detect",info.request.tabId,info.request.frameId);
-					}
+				try{
+					  chrome.tabs.sendMessage(info.request.tabId, {message: "nav", url:frameInfo.url, f_id: info.request.frameId});
+					 if(info.request.type==='image'){
+							sendImg(info.request, "detect",info.request.tabId,info.request.frameId);
+						}
+				}catch(e){;}
 		});
 	}else{
 		if(info.request.type==='image'){
