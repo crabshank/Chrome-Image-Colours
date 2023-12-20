@@ -96,8 +96,10 @@ function getImgLinks() {
 				  let q=';';
 				  u=(u.endsWith(q))?u.slice(0,-q.length):u;
 				  q=')';
+				  u=(u.endsWith(q))?u.slice(0,-q.length):u; 
+				  q=';';
 				  u=(u.endsWith(q))?u.slice(0,-q.length):u;
-				  q='&quot;';
+				  q='&quot';
 				  u=(u.endsWith(q))?u.slice(0,-q.length):u;
 				if(!fnl.includes(u)){
 					fnl.push(u);
