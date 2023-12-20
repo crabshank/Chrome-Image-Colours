@@ -92,7 +92,7 @@ function getImgLinks() {
 		  for (let j = 0, len_j=extensions.length; j <len_j ; j++) {
 			  let ej=extensions[j];
 			  if (chk.includes('.' + ej)) {
-				  let u=u.chk.split(' ').join('');
+				  let u=chk.split(' ').join('');
 				  let q=';';
 				  u=(u.endsWith(q))?u.slice(0,-q.length):u;
 				  q=')';
