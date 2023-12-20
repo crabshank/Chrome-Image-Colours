@@ -72,10 +72,9 @@ function getImgLinks() {
 		let strng = "";
 		let last_string = str.substring(sxj0,sxj1);
 		let cnt = 1;
-		while (past == false) {
+		while (past === false) {
 		  strng = str.substring(sxj0,sxj1 + cnt);
-
-		  for (let k = 0; k < unsafe.length; k++) {
+			  for (let k = 0, len_k=unsafe.length; k <len_k ; k++) {
 			  if (strng.charCodeAt(strng.length - 1) == unsafe[k]) {
 				  k = unsafe.length - 1;
 				  past = true;
@@ -466,7 +465,7 @@ function initSetup(){
 			let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
 			let gl=getImgLinks();
 			for(let i=0, len=gl.length; i<len; ++i){
-				let gi=g[i];
+				let gi=gl[i];
 				if(!lks.includes(gi)){
 					lks.push(gi);
 				}
@@ -993,7 +992,7 @@ function procCanvases(skip_clear){
 	let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
 	let gl=getImgLinks();
 	for(let i=0, len=gl.length; i<len; ++i){
-		let gi=g[i];
+		let gi=gl[i];
 		if(!lks.includes(gi)){
 			lks.push(gi);
 		}
