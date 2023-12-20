@@ -93,9 +93,9 @@ function getImgLinks() {
 			  let ej=extensions[j];
 			  if (chk.includes('.' + ej)) {
 				  let q=')';
-				  let u=(chk.endsWith(q))?chk.slice(0,q.length-1):chk;
+				  let u=(chk.endsWith(q))?chk.slice(0,-q.length):chk;
 				  q='&quot;';
-				  u=(u.endsWith(q))?u.slice(0,q.length-1):u;
+				  u=(u.endsWith(q))?u.slice(0,-q.length):u;
 				if(!fnl.includes(u)){
 					fnl.push(u);
 				}
