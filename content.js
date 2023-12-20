@@ -75,7 +75,7 @@ function getImgLinks() {
 		while (past === false) {
 		  strng = str.substring(sxj0,sxj1 + cnt);
 			  for (let k = 0, len_k=unsafe.length; k <len_k ; k++) {
-			  if (strng.charCodeAt(strng.length - 1) == unsafe[k]) {
+			  if (strng.charCodeAt(strng.length - 1) === unsafe[k]) {
 				  k = unsafe.length - 1;
 				  past = true;
 				  check.push(last_string);
@@ -90,11 +90,17 @@ function getImgLinks() {
 		  check[k] = check[k].split('\\').join('');
 		  let chk=check[k];
 		  for (let j = 0, len_j=extensions.length; j <len_j ; j++) {
-			  if (chk.includes('.' + extensions[j])) {
+			  let ej=extensions[j];
+			  if (chk.includes('.' + ej)) {
 				  let u=chk.split(')')[0];
+				  let q=')';
+				  u=(u.endsWith(q))?u.slice(0,q.length-1):u;
+				  q='&quot;';
+				  u=(u.endsWith(q))?u.slice(0,q.length-1):u;
 				if(!fnl.includes(u)){
 					fnl.push(u);
 				}
+				
 				break;
 			  }
 		  }
