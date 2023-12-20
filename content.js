@@ -11,6 +11,99 @@ var activ=null;
 var blk=[false,[]];
 var firstImgs=false;
 
+function removeEls(d, array) {
+  var newArray = [];
+  for (let i = 0; i < array.length; i++) {
+	  if (array[i] !== d) {
+		  newArray.push(array[i]);
+	  }
+  }
+  return newArray;
+}
+
+function addChk(c) {
+  if (c.split('://')[0] == "") {
+	  return false;
+  }
+
+  if (c.split('://')[c.split('://').length + 1] == "") {
+	  return false;
+  }
+
+
+  if (c.split('://').join('').split('/').length !== removeEls("", c.split('://').join('').split('/')).length) {
+	  return false;
+  }
+  return true;
+}
+
+const schemes = ["https:", "http:", "ftp:"];
+const extensions = ['apng', 'avif', 'gif', 'jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'png', 'svg', 'webp', 'bmp', 'ico', 'cur', 'tif', 'tiff', 'heif', 'heic'];
+const unsafe = [32, 34, 39, 60, 62, 91, 93, 94, 96, 123, 124, 125, 338, 339, 352, 353, 376, 710, 8194, 8195, 8201, 8204, 8205, 8206, 8207, 8211, 8212, 8216, 8217, 8218, 8220, 8221, 8222, 8224, 8225, 8240, 8249, 8250, 8364]
+
+function findRegexIndices(string, substring, caseSensitive, indices) {
+  var substringLen = substring.length,
+	  reg = new RegExp(substring, caseSensitive ? 'gi' : 'g'),
+	  result;
+
+  while ((result = reg.exec(string))) {
+	  indices.push([result.index, result.index + substringLen]);
+  }
+  return indices;
+}
+
+function getImgLinks() {
+	let fnl = [];
+	let check = [];
+	let scheme_ix = [];
+
+	let str = document.documentElement.outerHTML.split('\\').join('');
+
+
+	for (let s = 0, len_s=schemes.length; s <len_s ; s++) {
+	  findRegexIndices(str, schemes[s], false, scheme_ix);
+	}
+
+	for (let j = 0, len_j=scheme_ix.length; j <len_j ; j++) {
+		let sxj=scheme_ix[j];
+		let sxj0=sxj[0];
+		let sxj1=sxj[1];
+		let past = false;
+		let strng = "";
+		let last_string = str.substring(sxj0,sxj1);
+		let cnt = 1;
+		while (past == false) {
+		  strng = str.substring(sxj0,sxj1 + cnt);
+
+		  for (let k = 0; k < unsafe.length; k++) {
+			  if (strng.charCodeAt(strng.length - 1) == unsafe[k]) {
+				  k = unsafe.length - 1;
+				  past = true;
+				  check.push(last_string);
+			  }
+		  }
+		  last_string = strng;
+		  cnt++;
+		}
+  }
+
+	for (let k = 0, len_k=check.length; k <len_k ; k++) {
+		  check[k] = check[k].split('\\').join('');
+		  let chk=check[k];
+		  for (let j = 0, len_j=extensions.length; j <len_j ; j++) {
+			  if (chk.includes('.' + extensions[j])) {
+				  let u=chk.split(')')[0];
+				if(!fnl.includes(u)){
+					fnl.push(u);
+				}
+				break;
+			  }
+		  }
+	}
+
+	return fnl;
+}
+
 function isScrollBottom(){
 		try{
 	let t = [		window?.pageYOffset,
@@ -371,6 +464,13 @@ function initSetup(){
 		if(activ===true){
 			setup();
 			let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
+			let gl=getImgLinks();
+			for(let i=0, len=gl.length; i<len; ++i){
+				let gi=g[i];
+				if(!lks.includes(gi)){
+					lks.push(gi);
+				}
+			}
 			chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
 		}
 	}	
@@ -891,6 +991,13 @@ function procCanvases(skip_clear){
 		clear_out();
 	}
 	let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
+	let gl=getImgLinks();
+	for(let i=0, len=gl.length; i<len; ++i){
+		let gi=g[i];
+		if(!lks.includes(gi)){
+			lks.push(gi);
+		}
+	}
 	chrome.runtime.sendMessage({message: "rqi",links: lks, f_id: fr_id}, function(response) {});
 }
 
