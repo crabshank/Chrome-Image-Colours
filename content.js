@@ -644,12 +644,25 @@ function absBoundingClientRect(el){
 			d.push(el[2]);
 		}
  }else if(cvsSel.selectedIndex==1){
-	 sortByArrCols(cols,[20,18,19],[-1,-1,-1]);
+	  
+	 let fn=[];
+	 let fa=[];
+	  for (let j = 0, len=cols.length; j<len; j++){
+		  let cj=cols[j];
+		  if(cj[20]===false){
+			   fa.push(cj);
+		  }else{
+			   fn.push(cj);
+		  }
+	  }
+	 sortByArrCols(fa,[21,18,19],[1,-1,-1]);
+	sortByArrCols(fn,[20,18,19],[-1,-1,-1]);
+	cols=[...fn,...fa];
 	for (let j = 0, len=cols.length; j<len; j++){
 		let el= canvasses[cols[j][17]];
 		d.push(el[2]);
 	 }
-	 
+	 console.log(cols);
 	let imgs=getMatchingNodesShadow(cvsSct,'IMG',true,false);
 	
 	let dnl=[];
@@ -658,8 +671,8 @@ function absBoundingClientRect(el){
 		 let ij=imgs[j];
 		if(ij.getAttribute('loaded')=='false'){
 			dnl.push(ij);
-		}else if(ij.getAttribute('has_source_img')=='false'){
-			dns.push(ij);
+		}else if(!ij.getAttribute('has_source_img')=='true'){
+			dns.unshift(ij);
 		}else if(!d.includes(ij)){
 			d.push(ij);
 		}
@@ -928,7 +941,7 @@ for (let i = 0; i<=12; i++){ //loop over colours
 diffAvg=(diffCnt!==0)?diffAvg/diffCnt:0;
 discr[21]=diffAvg;
 let c=discr[20];
-discr[20]=(OG_img.getAttribute("has_source_img")=='true')?Math.sqrt(  1-(  ( (c==0)?0:c-1 )/13  )  )*( Math.sqrt( (iRct.top*iRct.top)+(iRct.left*iRct.left) + 1) ):(diffAvg===0)?0:-1-(-(1/(diffAvg+1)))
+discr[20]=(OG_img.getAttribute("has_source_img")=='true')?Math.sqrt(  1-(  ( (c==0)?0:c-1 )/13  )  )*( Math.sqrt( (iRct.top*iRct.top)+(iRct.left*iRct.left) + 1) ):false;
 canvasses.push([canvas,ctx,OG_img,discr]);
 	
 doSort();
@@ -1015,7 +1028,6 @@ function checker(url, msg, fid){
 						let shd=false;
 						for(let k=0, len=url.length; k<len; k++){
 								for (let i=0, len_i=cviF.length; i<len_i; i++){
-									if( cviF[i].getAttribute("has_source_img")=='true'){
 											let s=(cviF[i].src==='')?cviF[i].currentSrc:cviF[i].src;
 											if(s===url){
 												if(shd===false){
@@ -1025,7 +1037,6 @@ function checker(url, msg, fid){
 												cviF[i].style.setProperty(  'border', 'red 0.3ch outset', 'important' );
 												cviF[i].scrollIntoView();
 											}
-									}
 								}
 						}
 					}catch(e){;}
