@@ -630,26 +630,22 @@ function absBoundingClientRect(el){
 		 cvsSct.style.setProperty( 'display', 'flex', 'important' );
 	 }
 	 
+	 let d=[];
 	if(cvsSel.selectedIndex==21){
 	 sortByArrCols(cols,[21,18,19],[-1,-1,-1]);
+	 for (let j = 0, len=cols.length; j<len; j++){
+		let el= canvasses[cols[j][17]];
+		d.push(el[2]);
+	}
  }else if (cvsSel.selectedIndex>=2){
-		   	 sortByCol(cols, cvsSel.selectedIndex-2);
+		 sortByCol(cols, cvsSel.selectedIndex-2);
+		 for (let j = 0, len=cols.length; j<len; j++){
+			let el= canvasses[cols[j][17]];
+			d.push(el[2]);
+		}
  }else if(cvsSel.selectedIndex==1){
 	 sortByArrCols(cols,[20,18,19],[-1,-1,-1]);
-	 let sCol_false=[];
-	 let sCol_true=[];
-	  for (let j = 0, len=cols.length; j<len; j++){
-		  let cj=cols[j];
-		  if(cj[20]===-1){
-			  sCol_false.push(cj);
-		  }else{
-			  sCol_true.push(cj);
-		  }
-	  }
-	  cols=[...sCol_true,...sCol_false];
- }
-	let d=[];
-	for (let j = 0, len=canvasses.length; j<len; j++){
+	for (let j = 0, len=cols.length; j<len; j++){
 		let el= canvasses[cols[j][17]];
 		d.push(el[2]);
 	 }
@@ -669,7 +665,9 @@ function absBoundingClientRect(el){
 		}
 	 }
 	 d=[...d,...dns,...dnl];
-	  for (let j = 0, len=d.length; j<len; j++){
+ }
+
+ for (let j = 0, len=d.length; j<len; j++){
 		  	d[j].style.setProperty( 'order', j, 'important' );
 	  }
  }
@@ -930,7 +928,7 @@ for (let i = 0; i<=12; i++){ //loop over colours
 diffAvg=(diffCnt!==0)?diffAvg/diffCnt:0;
 discr[21]=diffAvg;
 let c=discr[20];
-discr[20]=(OG_img.getAttribute("has_source_img")=='true')?Math.sqrt(  1-(  ( (c==0)?0:c-1 )/13  )  )*( Math.sqrt( (iRct.top*iRct.top)+(iRct.left*iRct.left) + 1) ):-1;
+discr[20]=(OG_img.getAttribute("has_source_img")=='true')?Math.sqrt(  1-(  ( (c==0)?0:c-1 )/13  )  )*( Math.sqrt( (iRct.top*iRct.top)+(iRct.left*iRct.left) + 1) ):(diffAvg===0)?0:-1-(-(1/(diffAvg+1)))
 canvasses.push([canvas,ctx,OG_img,discr]);
 	
 doSort();
