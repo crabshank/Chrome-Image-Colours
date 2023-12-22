@@ -636,11 +636,42 @@ function absBoundingClientRect(el){
 		   	 sortByCol(cols, cvsSel.selectedIndex-2);
  }else if(cvsSel.selectedIndex==1){
 	 sortByArrCols(cols,[20,18,19],[-1,-1,-1]);
+	 let sCol_false=[];
+	 let sCol_true=[];
+	  for (let j = 0, len=cols.length; j<len; j++){
+		  let cj=cols[j];
+		  if(cj[20]===-1){
+			  sCol_false.push(cj);
+		  }else{
+			  sCol_true.push(cj);
+		  }
+	  }
+	  cols=[...sCol_true,...sCol_false];
  }
-	 for (let j = 0; j<canvasses.length; j++){
-		 let el= canvasses[cols[j][17]];
-			el[2].style.setProperty( 'order', j, 'important' );
+	let d=[];
+	for (let j = 0, len=canvasses.length; j<len; j++){
+		let el= canvasses[cols[j][17]];
+		d.push(el[2]);
 	 }
+	 
+	let imgs=getMatchingNodesShadow(cvsSct,'IMG',true,false);
+	
+	let dnl=[];
+	let dns=[];
+	 for (let j = 0, len=imgs.length; j<len; j++){
+		 let ij=imgs[j];
+		if(ij.getAttribute('loaded')=='false'){
+			dnl.push(ij);
+		}else if(ij.getAttribute('has_source_img')=='false'){
+			dns.push(ij);
+		}else if(!d.includes(ij)){
+			d.push(ij);
+		}
+	 }
+	 d=[...d,...dns,...dnl];
+	  for (let j = 0, len=d.length; j<len; j++){
+		  	d[j].style.setProperty( 'order', j, 'important' );
+	  }
  }
 
 function sortByCol(arr, colIndex){
@@ -899,7 +930,7 @@ for (let i = 0; i<=12; i++){ //loop over colours
 diffAvg=(diffCnt!==0)?diffAvg/diffCnt:0;
 discr[21]=diffAvg;
 let c=discr[20];
-discr[20]=Math.sqrt(  1-(  ( (c==0)?0:c-1 )/13  )  )*( Math.sqrt( (iRct.top*iRct.top)+(iRct.left*iRct.left) + 1) );
+discr[20]=(OG_img.getAttribute("has_source_img")=='true')?Math.sqrt(  1-(  ( (c==0)?0:c-1 )/13  )  )*( Math.sqrt( (iRct.top*iRct.top)+(iRct.left*iRct.left) + 1) ):-1;
 canvasses.push([canvas,ctx,OG_img,discr]);
 	
 doSort();
@@ -912,12 +943,16 @@ function checker(url, msg, fid){
 	}else if((msg=="detect" || msg=="rqi") && fr_id==0 && cvsSel.selectedIndex>=1){
 				url=Array.from(new Set(url));
 				let cvsUrls=[...cvsSct.getElementsByTagName('IMG')].map((i)=>{return i.getAttribute('og_url');});
+				let igs=getMatchingNodesShadow(document,'IMG',true,false);
 					for(let k=0, len=url.length; k<len; k++){
 						if(!cvsUrls.includes(url[k])){
+						let iel=igs.find((i)=>{return (i.src===url[k] || i.currentSrc===url[k] ); });
+						iel=(typeof(iel)==='undefined')?false:true;
 						var img = new Image();
 						img.setAttribute('crossOrigin', '');
 							img.addEventListener("load", function (e) {
 								let imge=e.target;
+								 imge.setAttribute("loaded", true);
 								let url_img= imge.getAttribute('src');
 										var WIDTH =imge.width;
 										var HEIGHT = imge.height;
@@ -968,26 +1003,30 @@ function checker(url, msg, fid){
 							 img.style.setProperty( 'border-radius', '0%', 'important' );
 							 img.crossOrigin = "Anonymous";
 							 cvsSct.appendChild(img);
+							 img.setAttribute("loaded", false);
+							 img.setAttribute("has_source_img", iel);
 							 img.setAttribute("og_url", url[k]);
 							 img.setAttribute("src", url[k]);
 					}
 			}
 			}else if(msg=="hl"){
 					try{
-						var cvi=(fr_id==0)?[...cvsSct.getElementsByTagName('IMG')]:[];
+						var cvi=(fr_id===0)?[...cvsSct.getElementsByTagName('IMG')]:[];
 						var all_i=getMatchingNodesShadow(document,'IMG',true,false);
 						var cviF=all_i.filter((i)=>{return !cvi.includes(i);});
 						let shd=false;
 						for(let k=0, len=url.length; k<len; k++){
 								for (let i=0, len_i=cviF.length; i<len_i; i++){
-									let s=(cviF[i].src==='')?cviF[i].currentSrc:cviF[i].src;
-									if(s===url){
-										if(shd===false){
-											deGreen();
-											shd=true;
-										}
-										cviF[i].style.setProperty(  'border', 'red 0.3ch outset', 'important' );
-										cviF[i].scrollIntoView();
+									if( cviF[i].getAttribute("has_source_img")=='true'){
+											let s=(cviF[i].src==='')?cviF[i].currentSrc:cviF[i].src;
+											if(s===url){
+												if(shd===false){
+													deGreen();
+													shd=true;
+												}
+												cviF[i].style.setProperty(  'border', 'red 0.3ch outset', 'important' );
+												cviF[i].scrollIntoView();
+											}
 									}
 								}
 						}
