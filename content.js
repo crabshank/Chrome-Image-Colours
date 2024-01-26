@@ -10,6 +10,7 @@ var resizeObserver=null;
 var activ=null;
 var blk=[false,[]];
 var firstImgs=false;
+var max_hgt=null;
 
 function removeEls(d, array) {
   var newArray = [];
@@ -53,9 +54,40 @@ function findRegexIndices(string, substring, caseSensitive, indices) {
 }
 
 function getImgLinks() {
+	
+	function schLoop(schx){
+		let out=[];
+		for (let j = 0, len_j=schx.length; j <len_j ; j++) {
+			let sxj=schx[j];
+			let sxj0=sxj[0];
+			let sxj1=sxj[1];
+			let past = false;
+			let strng = "";
+			let last_string = str.substring(sxj0,sxj1);
+			let cnt = 1;
+			while (past === false) {
+			  strng = str.substring(sxj0,sxj1 + cnt);
+				  for (let k = 0, len_k=unsafe.length; k <len_k ; k++) {
+				  if (strng.charCodeAt(strng.length - 1) === unsafe[k]) {
+					  k = unsafe.length - 1;
+					  past = true;
+					  out.push(last_string);
+				  }
+			  }
+			  last_string = strng;
+			  cnt++;
+			}
+		}
+		return out;
+	}
+	
+	
+	
 	let fnl = [];
 	let check = [];
+	let check_data = [];
 	let scheme_ix = [];
+	let scheme_data = [];
 
 	let str = document.documentElement.outerHTML.split('\\').join('');
 
@@ -63,35 +95,28 @@ function getImgLinks() {
 	for (let s = 0, len_s=schemes.length; s <len_s ; s++) {
 	  findRegexIndices(str, schemes[s], false, scheme_ix);
 	}
-
-	for (let j = 0, len_j=scheme_ix.length; j <len_j ; j++) {
-		let sxj=scheme_ix[j];
-		let sxj0=sxj[0];
-		let sxj1=sxj[1];
-		let past = false;
-		let strng = "";
-		let last_string = str.substring(sxj0,sxj1);
-		let cnt = 1;
-		while (past === false) {
-		  strng = str.substring(sxj0,sxj1 + cnt);
-			  for (let k = 0, len_k=unsafe.length; k <len_k ; k++) {
-			  if (strng.charCodeAt(strng.length - 1) === unsafe[k]) {
-				  k = unsafe.length - 1;
-				  past = true;
-				  check.push(last_string);
-			  }
-		  }
-		  last_string = strng;
-		  cnt++;
-		}
-  }
+	
+	findRegexIndices(str ,"data\\:image[^\\;]*\\;", false, scheme_data);
+	
+	check= schLoop(scheme_ix);
+	check_data= schLoop(scheme_data);
 
 	for (let k = 0, len_k=check.length; k <len_k ; k++) {
-		  check[k] = check[k].split('\\').join('');
-		  let chk=check[k];
+		check[k]=[check[k],false]
+	}
+	
+	for (let k = 0, len_k=check_data.length; k <len_k ; k++) {
+		check.push([check_data[k],true])
+	}
+	
+	for (let k = 0, len_k=check.length; k <len_k ; k++) {
+		  let ck=check[k];
+		  let ck1=ck[1];
+		  let chk=ck[0].split('\\').join('');
+
 		  for (let j = 0, len_j=extensions.length; j <len_j ; j++) {
 			  let ej=extensions[j];
-			  if (chk.includes('.' + ej)) {
+			  if ( (chk.includes('.' + ej) && ck1===false) || ck1===true ) {
 				  let u=chk.split(' ').join('');
 				  let q=';';
 				  u=(u.endsWith(q))?u.slice(0,-q.length):u;
@@ -451,11 +476,14 @@ function setup(){
 		if(resizeObserver===null){
 			resizeObserver = new ResizeObserver((entries) => {
 				for (const entry of entries) {
-					//ifrm.style.height=(entry.devicePixelContentBoxSize[0].blockSize)+'px';
-					let iab=(ifrm.getAttribute('isAboveBtm')=='true')?true:false;
-					rsz(false,iab);
-					if(!iab){
-						ifrm.style.setProperty('height',(entry.target.getBoundingClientRect().height+5)+'px','important');
+					let rzh=entry.devicePixelContentBoxSize[0].blockSize;
+					if(max_hgt===null || rzh>max_hgt){
+						max_hgt=rzh;
+						let iab=(ifrm.getAttribute('isAboveBtm')=='true')?true:false;
+						rsz(false,iab);
+						if(!iab){
+							ifrm.style.setProperty('height',(entry.target.getBoundingClientRect().height+5)+'px','important');
+						}
 					}
 				}
 			});
