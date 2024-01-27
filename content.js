@@ -116,7 +116,7 @@ function getImgLinks() {
 
 		  for (let j = 0, len_j=extensions.length; j <len_j ; j++) {
 			  let ej=extensions[j];
-			  if ( (chk.includes('.' + ej) && ck1===false) || ck1===true ) {
+			  if ( (chk.toLocaleLowerCase().includes('.' + ej) && ck1===false) || ck1===true ) {
 				  let u=chk.split(' ').join('');
 				  let q=';';
 				  u=(u.endsWith(q))?u.slice(0,-q.length):u;
