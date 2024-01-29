@@ -11,6 +11,7 @@ var activ=null;
 var blk=[false,[]];
 var firstImgs=false;
 var max_hgt=null;
+var loadedURLs=[];
 
 function removeEls(d, array) {
   var newArray = [];
@@ -391,6 +392,7 @@ function deGreen(){
 function clear_out(){
 	if(fr_id==0 ){
 		to_draw=[];
+		loadedURLs=[];
 		if(activ===true){
 			cvsSct.innerHTML='';
 			canvasses=[];
@@ -984,7 +986,15 @@ function checker(url, msg, fid){
 				let cvsUrls=[...cvsSct.getElementsByTagName('IMG')].map((i)=>{return i.getAttribute('og_url');});
 				let igs=getMatchingNodesShadow(document,'IMG',true,false);
 					for(let k=0, len=url.length; k<len; k++){
-						if(!cvsUrls.includes(url[k])){
+						let alreadyLoaded=false;
+						for(let d=0, len_d=loadedURLs.length; d<len_d; d++){
+							let ld=loadedURLs[d];
+							if(ld.includes(url[k]) || (url[k]).includes(ld)){
+								alreadyLoaded=true;
+								break;
+							}
+						}
+						if(!cvsUrls.includes(url[k]) && alreadyLoaded===false){
 						let iel=igs.find((i)=>{return (i.src===url[k] || i.currentSrc===url[k] ); });
 						iel=(typeof(iel)==='undefined')?false:true;
 						var img = new Image();
@@ -992,6 +1002,7 @@ function checker(url, msg, fid){
 							img.addEventListener("load", function (e) {
 								let imge=e.target;
 								 imge.setAttribute("loaded", true);
+								 loadedURLs.push(imge.getAttribute("og_url"));
 								let url_img= imge.getAttribute('src');
 										var WIDTH =imge.width;
 										var HEIGHT = imge.height;
