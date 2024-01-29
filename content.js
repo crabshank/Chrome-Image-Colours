@@ -463,7 +463,7 @@ function setup(){
 		}
 		doSort();
 		if(z){
-			ifrm.scrollIntoView({behavior: "auto", block: 'start', inline: 'start'});
+			ifrm.scrollIntoView({behavior: "instant", block: 'start', inline: 'start'});
 		}
 	}
 		
@@ -493,7 +493,7 @@ function setup(){
 		}
 
 	if(scr){
-		ifrm.scrollIntoView({behavior: "auto", block: 'end', inline: 'start'});
+		ifrm.scrollIntoView({behavior: "instant", block: 'end', inline: 'start'});
 	}
 }
 
@@ -502,6 +502,39 @@ function initSetup(){
 		chrome.runtime.sendMessage({message: "resetBdg"}, function(response) {;});
 		if(activ===true){
 			setup();
+			
+			let abt=false;
+			let h=[
+				document?.documentElement?.scrollHeight,
+				document?.body?.scrollHeight,
+				document?.head?.scrollHeight,
+				window.screen.availHeight,
+				window.screen.height,
+				window.innerHeight,
+				window.outerHeight,
+				document?.documentElement?. clientHeight,
+				document?.body?. clientHeight,
+				document?.head?. clientHeight,
+				document?.documentElement?. offsetHeight,
+				document?.body?. offsetHeight,
+				document?.head?. offsetHeight
+			];
+			
+			h=h.filter( (g)=>{return g>0} );
+				let ifrmR=absBoundingClientRect(ifrm);
+				let ifb=ifrmR.bottom;
+				for(let k=0, len_k=h.length; k<len_k;k++){
+					if(Math.abs(ifb - h[k])<1){
+						abt=true;
+						break;
+					}
+				}
+				
+			if(abt===false){
+				ifrm.setAttribute('isAboveBtm','true');
+				ifrm.scrollIntoView({behavior: "instant", block: 'start', inline: 'start'});
+			}
+			
 			let lks=getMatchingNodesShadow(document,'IMG',true,false).map((i)=>{return (i.src==='')?i.currentSrc:i.src;}).filter((i)=>{return i!==''});
 			let gl=getImgLinks();
 			for(let i=0, len=gl.length; i<len; ++i){
@@ -1008,7 +1041,7 @@ function checker(url, msg, fid){
 												try{
 													OG_img.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
 													OG_img.setAttribute('rhl',true);
-													OG_img.scrollIntoView();
+													OG_img.scrollIntoView({behavior: "instant", block: 'start', inline: 'start'});
 												}catch(e){;}
 											};
 											
@@ -1067,7 +1100,7 @@ function checker(url, msg, fid){
 													shd=true;
 												}
 												cviF[i].style.setProperty(  'border', 'red 0.3ch outset', 'important' );
-												cviF[i].scrollIntoView();
+												cviF[i].scrollIntoView({behavior: "instant", block: 'start', inline: 'start'});
 											}
 								}
 						}
@@ -1144,7 +1177,7 @@ function gotMessage(message, sender, sendResponse) {
 					uImg.style.setProperty( 'border', 'hsl(103deg 100% 50%) 0.3ch outset', 'important' );
 				}
 				uImg.setAttribute('ghl',true);
-				uImg.scrollIntoView();
+				uImg.scrollIntoView({behavior: "instant", block: 'start', inline: 'start'});
 			}
 		}
 	}else if( message.message==='hl'|| activ!==null){
