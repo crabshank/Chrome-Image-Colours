@@ -986,15 +986,8 @@ function checker(url, msg, fid){
 				let cvsUrls=[...cvsSct.getElementsByTagName('IMG')].map((i)=>{return i.getAttribute('og_url');});
 				let igs=getMatchingNodesShadow(document,'IMG',true,false);
 					for(let k=0, len=url.length; k<len; k++){
-						let alreadyLoaded=false;
-						for(let d=0, len_d=loadedURLs.length; d<len_d; d++){
-							let ld=loadedURLs[d];
-							if(ld.includes(url[k]) || (url[k]).includes(ld)){
-								alreadyLoaded=true;
-								break;
-							}
-						}
-						if(!cvsUrls.includes(url[k]) && alreadyLoaded===false){
+						let alreadyLoaded=loadedURLs.findIndex(u=>{return u.includes(url[k]) || (url[k]).includes(u); });
+						if(!cvsUrls.includes(url[k]) && alreadyLoaded===-1){
 						let iel=igs.find((i)=>{return (i.src===url[k] || i.currentSrc===url[k] ); });
 						iel=(typeof(iel)==='undefined')?false:true;
 						var img = new Image();
