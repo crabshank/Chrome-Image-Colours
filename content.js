@@ -11,7 +11,9 @@ var activ=null;
 var blk=[false,[]];
 var firstImgs=false;
 var max_hgt=null;
+var img_cnt_ro=0;
 var loadedURLs=[];
+var xtraBottom=5;
 
 function removeEls(d, array) {
   var newArray = [];
@@ -375,7 +377,7 @@ const colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orang
 
 function deGreen(){
 	if(fr_id===0){
-		let us=[...cvsSct.getElementsByTagName('IMG')];
+		let us=getMatchingNodesShadow(cvsSct,'IMG',true,false);
 		let ux=us.filter((i)=>{return i.getAttribute('ghl')=='true'});
 		if(ux.length>0){
 			for(let i=0, len=ux.length;  i<len; i++){
@@ -392,11 +394,13 @@ function deGreen(){
 function clear_out(){
 	if(fr_id==0 ){
 		to_draw=[];
-		loadedURLs=[];
 		if(activ===true){
 			cvsSct.innerHTML='';
 			canvasses=[];
-			 g_ix=0;
+			loadedURLs=[];
+			img_cnt_ro=0;
+			max_hgt=null;
+			g_ix=0;
 			chrome.runtime.sendMessage({message: "clr"}, function(response) {});
 			chrome.runtime.sendMessage({message: "cnt", count:0}, function(response) {});
 			rsz();
@@ -456,12 +460,21 @@ function setup(){
 	 
 	cvsSel.oninput=function(){
 		let z=false;
+		let sch;
 		if(cvsSel.selectedIndex!=0){
 			z=true;
 			drawAllPending();
 			chrome.runtime.sendMessage({message: "nav_0_noClear"}, function(response) {;});
+			doSort();
+			sch=ifrm.contentWindow.document.body.getBoundingClientRect().height+xtraBottom;
+		}else{
+			cvsSct.style.setProperty( 'display', 'none', 'important' );
+			sch=cvsSctTop.getBoundingClientRect().height+xtraBottom;
 		}
-		doSort();
+		ifrm.style.setProperty('max-height',`${sch}px`,'important');
+		ifrm.style.setProperty('min-height',`${sch}px`,'important');
+		ifrm.style.setProperty('height',`${sch}px`,'important');
+		
 		if(z){
 			ifrm.scrollIntoView({behavior: "instant", block: 'start', inline: 'start'});
 		}
@@ -478,13 +491,18 @@ function setup(){
 		if(resizeObserver===null){
 			resizeObserver = new ResizeObserver((entries) => {
 				for (const entry of entries) {
+					let cimgs=getMatchingNodesShadow(cvsSct,'IMG',true,false);
+					let cil=cimgs.length;
 					let rzh=entry.devicePixelContentBoxSize[0].blockSize;
-					if(max_hgt===null || rzh>max_hgt){
-						max_hgt=rzh;
+					let hs=(max_hgt===null || rzh>max_hgt)?true:false;
+					let ic=(cil!==img_cnt_ro)?true:false;
+					if( hs|| ic ){
+						max_hgt=hs ? rzh : max_hgt;
+						img_cnt_ro=ic ? cil : img_cnt_ro;
 						let iab=(ifrm.getAttribute('isAboveBtm')=='true')?true:false;
 						rsz(false,iab);
 						if(!iab){
-							ifrm.style.setProperty('height',(entry.target.getBoundingClientRect().height+5)+'px','important');
+							ifrm.style.setProperty('height',(entry.target.getBoundingClientRect().height+xtraBottom)+'px','important');
 						}
 					}
 				}
@@ -1016,7 +1034,7 @@ function checker(url, msg, fid){
 		to_draw.push([url, msg, fid]);
 	}else if((msg=="detect" || msg=="rqi") && fr_id==0 && cvsSel.selectedIndex>=1){
 				url=Array.from(new Set(url));
-				let cvsUrls=[...cvsSct.getElementsByTagName('IMG')].map((i)=>{return i.getAttribute('og_url');});
+				let cvsUrls=getMatchingNodesShadow(cvsSct,'IMG',true,false).map((i)=>{return i.getAttribute('og_url');});
 				let igs=getMatchingNodesShadow(document,'IMG',true,false);
 					for(let k=0, len=url.length; k<len; k++){
 						let alreadyLoaded=loadedURLs.findIndex(u=>{return u.includes(url[k]) || (url[k]).includes(u); });
@@ -1061,7 +1079,7 @@ function checker(url, msg, fid){
 													}else if(cvsSel.selectedIndex>=1){
 														cvsSct.style.setProperty( 'display', 'inline-flex', 'important' );
 														if(activ===true){
-															chrome.runtime.sendMessage({message: "cnt", count: [...cvsSct.getElementsByTagName('CANVAS')].length}, function(response) {;});
+															chrome.runtime.sendMessage({message: "cnt", count: getMatchingNodesShadow(cvsSct,'IMG',true,false).length}, function(response) {;});
 														}
 													}
 													rsz();
@@ -1087,7 +1105,7 @@ function checker(url, msg, fid){
 			}
 			}else if(msg=="hl"){
 					try{
-						var cvi=(fr_id===0)?[...cvsSct.getElementsByTagName('IMG')]:[];
+						var cvi=(fr_id===0)?getMatchingNodesShadow(cvsSct,'IMG',true,false):[];
 						var all_i=getMatchingNodesShadow(document,'IMG',true,false);
 						var cviF=all_i.filter((i)=>{return !cvi.includes(i);});
 						let shd=false;
@@ -1152,7 +1170,7 @@ function gotMessage(message, sender, sendResponse) {
 		}
 	}else if(message.message=="cnt_this"){
 		if(fr_id===0 && activ){
-			chrome.runtime.sendMessage({message: "cnt", count: ( (window.getComputedStyle(cvsSct)['display']==='none')? 0 : [...cvsSct.getElementsByTagName('CANVAS')].length ) }, function(response) {});
+			chrome.runtime.sendMessage({message: "cnt", count: ( (window.getComputedStyle(cvsSct)['display']==='none')? 0 : getMatchingNodesShadow(cvsSct,'IMG',true,false).length ) }, function(response) {});
 		}
 	}else if(message.message=="nav_0"){
 			procCanvases();
@@ -1168,7 +1186,7 @@ function gotMessage(message, sender, sendResponse) {
 		}
 	}else if( message.message==='jmp'){
 		if(fr_id===0 && window.getComputedStyle(cvsSct)['display']!=='none'){
-			let us=[...cvsSct.getElementsByTagName('IMG')];
+			let us=getMatchingNodesShadow(cvsSct,'IMG',true,false);
 			let ux=us.findIndex((i)=>{return i.getAttribute('og_url')===message.imgSrc});
 			if(ux>=0){
 				deGreen();
