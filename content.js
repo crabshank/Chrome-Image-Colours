@@ -281,14 +281,20 @@ function rsz(skp,iab){
 					ifrm.setAttribute('isAboveBtm','true');
 				}
 				let sch=parseFloat(document.documentElement.scrollHeight)-(ifrmR.top);
+				ifrm.style.setProperty('top','','important');
+				let t1=absBoundingClientRect(ifrm).top;
 				ifrm.style.setProperty('top',`${sch*0.18}px`,'important');
+				let t2=absBoundingClientRect(ifrm).top;
+				if(t1>t2){
+					ifrm.style.setProperty('top','','important');
+				}
 				sch*=0.9964;
 				ifrm.style.setProperty('max-height',`${sch}px`,'important');
 				ifrm.style.setProperty('min-height',`${sch}px`,'important');
 				ifrm.style.setProperty('height',`${sch}px`,'important');
 				ifrm.contentWindow.document.body.style.overflow='scroll';
 			}else{
-				ifrm.style.setProperty('top','','important');
+				
 				ifrm.style.setProperty('max-height','','important');
 				ifrm.style.setProperty('min-height','','important');
 				//ifrm.style.setProperty('height','max-content');
