@@ -749,7 +749,7 @@ function absBoundingClientRect(el){
 		let el= canvasses[cols[j][17]];
 		d.push(el[2]);
 	 }
-	 console.log(cols);
+	 //console.log(cols);
 	let imgs=getMatchingNodesShadow(cvsSct,'IMG',true,false);
 	
 	let dnl=[];
@@ -1043,8 +1043,23 @@ function checker(url, msg, fid){
 				let cvsUrls=getMatchingNodesShadow(cvsSct,'IMG',true,false).map((i)=>{return i.getAttribute('og_url');});
 				let igs=getMatchingNodesShadow(document,'IMG',true,false);
 					for(let k=0, len=url.length; k<len; k++){
-						let alreadyLoaded=loadedURLs.findIndex(u=>{return u.includes(url[k]) || (url[k]).includes(u); });
-						if(!cvsUrls.includes(url[k]) && alreadyLoaded===-1){
+						let alreadyLoaded=loadedURLs.findIndex(u=>{return (	u.includes(url[k]) || (url[k]).includes(u)	); });
+						let ldf=true;
+						if(alreadyLoaded!==-1){
+							ldf=false;
+							let alu=loadedURLs[alreadyLoaded];
+							if(alu.length>url[k].length){
+								ldf=true;
+								let rem=[...getMatchingNodesShadow(cvsSct,'IMG',true,false).map((i)=>{return i.getAttribute('og_url');}).filter((i)=>{return i===alu;}),
+								...getMatchingNodesShadow(cvsSct,'CANVAS',true,false).map((i)=>{return i.getAttribute('og_addr');}).filter((i)=>{return i===alu;})
+								];
+								for(let r=0, len=rem.length; r<len; r++){
+									elRemover(rem[r]);
+								}
+							}
+						}
+						
+						if(!cvsUrls.includes(url[k]) && ldf===true){
 						let iel=igs.find((i)=>{return (i.src===url[k] || i.currentSrc===url[k] ); });
 						iel=(typeof(iel)==='undefined')?false:true;
 						var img = new Image();
@@ -1052,12 +1067,12 @@ function checker(url, msg, fid){
 							img.addEventListener("load", function (e) {
 								let imge=e.target;
 								 imge.setAttribute("loaded", true);
-								 loadedURLs.push(imge.getAttribute("og_url"));
+								 let ogu=imge.getAttribute("og_url");
+								 loadedURLs.push(ogu);
 								let url_img= imge.getAttribute('src');
 										var WIDTH =imge.width;
 										var HEIGHT = imge.height;
 									if(WIDTH>0 && HEIGHT >0){
-											
 											imge.onclick=(event)=>{
 												event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
 												event.target.setAttribute('rhl',true);
@@ -1072,6 +1087,7 @@ function checker(url, msg, fid){
 														canvas = document.createElement('canvas');
 														canvas.setAttribute("from_frame",fid);
 														canvas.setAttribute("source_addr",url_img);
+														canvas.setAttribute("og_addr",ogu);
 														canvasCtx = canvas.getContext("2d");
 														canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 														canvasCtx.fillStyle = 'rgb(0,0,0)';
