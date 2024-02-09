@@ -13,6 +13,7 @@ var firstImgs=false;
 var max_hgt=null;
 var img_cnt_ro=0;
 var loadedURLs=[];
+var loadedToRemURLs={};
 var xtraBottom=5;
 
 function removeEls(d, array) {
@@ -404,6 +405,7 @@ function clear_out(){
 			cvsSct.innerHTML='';
 			canvasses=[];
 			loadedURLs=[];
+			loadedToRemURLs={};
 			img_cnt_ro=0;
 			max_hgt=null;
 			g_ix=0;
@@ -1050,12 +1052,9 @@ function checker(url, msg, fid){
 							let alu=loadedURLs[alreadyLoaded];
 							if(alu.length>url[k].length){
 								ldf=true;
-								let rem=[...getMatchingNodesShadow(cvsSct,'IMG',true,false).map((i)=>{return i.getAttribute('og_url');}).filter((i)=>{return i===alu;}),
+								loadedToRemURLs[ url[k] ]=[...getMatchingNodesShadow(cvsSct,'IMG',true,false).map((i)=>{return i.getAttribute('og_url');}).filter((i)=>{return i===alu;}),
 								...getMatchingNodesShadow(cvsSct,'CANVAS',true,false).map((i)=>{return i.getAttribute('og_addr');}).filter((i)=>{return i===alu;})
 								];
-								for(let r=0, len=rem.length; r<len; r++){
-									elRemover(rem[r]);
-								}
 							}
 						}
 						
@@ -1073,6 +1072,14 @@ function checker(url, msg, fid){
 										var WIDTH =imge.width;
 										var HEIGHT = imge.height;
 									if(WIDTH>0 && HEIGHT >0){
+											let logu=loadedToRemURLs[ogu];
+											if ( typeof(logu)!=='undefined'){
+												for(let r=0, len=logu.length; r<len; r++){
+													elRemover(logu[r]);
+												}
+												delete loadedToRemURLs[ogu];
+											}
+											
 											imge.onclick=(event)=>{
 												event.target.style.setProperty( 'border', 'red 0.3ch outset', 'important' );
 												event.target.setAttribute('rhl',true);
