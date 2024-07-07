@@ -585,7 +585,9 @@ async function get_ids(){
 			if(fr_id===0){
 				chg_recs[(fr_id).toString()]=window.location.href;
 			}
-			//initSetup();
+			if(activ===true){
+				initSetup();
+			}
 			resolve();
 		});
 	});
