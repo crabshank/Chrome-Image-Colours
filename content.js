@@ -327,60 +327,7 @@ function rsz(skp,iab){
 	}catch(e){;}
 }
 
-let ifrm=document.createElement('iframe');
-ifrm.style.setProperty( 'all', 'initial', 'important' );
-ifrm.style.setProperty( 'pointer-events', 'none', 'important' );
-ifrm.style.setProperty( 'visibility', 'initial', 'important' );
-ifrm.style.setProperty( 'position', 'absolute', 'important' );
-ifrm.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
-ifrm.style.setProperty( 'height', '0px', 'important' );
-ifrm.style.setProperty( 'width', '-webkit-fill-available', 'important' );
-ifrm.style.setProperty( 'margin', 0, 'important' );
-ifrm.style.setProperty( 'border', 0, 'important' );
-ifrm.style.setProperty( 'display', 'flex', 'important' );
-ifrm.style.setProperty( 'background', 'transparent', 'important' );
-ifrm.style.setProperty( 'transform', 'translateY(0px)', 'important' );
-ifrm.style.setProperty( 'transform-origin', 'left top', 'important' );
-ifrm.style.setProperty( 'user-select', 'none', 'important' );
-ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
-
-document.body.insertAdjacentElement('beforeend',ifrm);
-
-//ifrm.src = "";
-
-let ht=`<html>
-
-<head>
-<meta charset="utf-8">
-<style>
-::-webkit-scrollbar {
-    display: none;
-}
-</style>
-</head>
-	
-<body>
-</body>
-
-</html>`;
-
-ifrm.contentWindow.document.open();
-ifrm.contentWindow.document.write(ht);
-ifrm.contentWindow.document.close();
-
-let style_tag=ifrm.contentWindow.document.head.firstChild;
-
-var cvsSctTop=document.createElement('section');
-ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
-
-let ctR=cvsSctTop.getBoundingClientRect();
-ifrm.style.setProperty('padding-top',ctR.height,'important');
-ifrm.style.setProperty( 'padding', 0, 'important' );
-
-var cvsSct=document.createElement('section');
-var cvsClr=document.createElement('button');
-var cvsSel=document.createElement('select');
-const colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks','Average of unique colours'];
+let ifrm, ht, style_tag, cvsSctTop, ctR, cvsSc, cvsClr, cvsSel, colNames;
 
 function deGreen(){
 	if(fr_id===0){
@@ -525,6 +472,61 @@ function setup(){
 
 function initSetup(){
 	if(fr_id==0){
+		
+		ifrm=document.createElement('iframe');
+		ifrm.style.setProperty( 'all', 'initial', 'important' );
+		ifrm.style.setProperty( 'pointer-events', 'none', 'important' );
+		ifrm.style.setProperty( 'visibility', 'initial', 'important' );
+		ifrm.style.setProperty( 'position', 'absolute', 'important' );
+		ifrm.style.setProperty( 'z-index', Number.MAX_SAFE_INTEGER, 'important' );
+		ifrm.style.setProperty( 'height', '0px', 'important' );
+		ifrm.style.setProperty( 'width', '-webkit-fill-available', 'important' );
+		ifrm.style.setProperty( 'margin', 0, 'important' );
+		ifrm.style.setProperty( 'border', 0, 'important' );
+		ifrm.style.setProperty( 'display', 'flex', 'important' );
+		ifrm.style.setProperty( 'background', 'transparent', 'important' );
+		ifrm.style.setProperty( 'transform', 'translateY(0px)', 'important' );
+		ifrm.style.setProperty( 'transform-origin', 'left top', 'important' );
+		ifrm.style.setProperty( 'user-select', 'none', 'important' );
+		ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
+
+		document.body.insertAdjacentElement('beforeend',ifrm);
+		//ifrm.src = "";
+
+		ht=`<html>
+
+		<head>
+		<meta charset="utf-8">
+		<style>
+		::-webkit-scrollbar {
+			display: none;
+		}
+		</style>
+		</head>
+			
+		<body>
+		</body>
+
+		</html>`;
+
+		ifrm.contentWindow.document.open();
+		ifrm.contentWindow.document.write(ht);
+		ifrm.contentWindow.document.close();
+
+		style_tag=ifrm.contentWindow.document.head.firstChild;
+
+		cvsSctTop=document.createElement('section');
+		ifrm.contentWindow.document.body.insertAdjacentElement('afterbegin',cvsSctTop);
+
+		ctR=cvsSctTop.getBoundingClientRect();
+		ifrm.style.setProperty('padding-top',ctR.height,'important');
+		ifrm.style.setProperty( 'padding', 0, 'important' );
+
+		cvsSct=document.createElement('section');
+		cvsClr=document.createElement('button');
+		cvsSel=document.createElement('select');
+		colNames = ['Show nothing','Show unsorted images','Greyscale','Red','Orange/Brown','Yellow','Chartreuse/Lime','Green','Spring green','Cyan','Azure/Sky blue','Blue','Violet/Purple','Magenta/Pink','Reddish pink','All Pinks','Cyan to Blue','Chartreuse/Lime + Green','Red + Pinks','Average of unique colours'];
+
 		chrome.runtime.sendMessage({message: "resetBdg"}, function(response) {;});
 		if(activ===true){
 			setup();
@@ -583,7 +585,7 @@ async function get_ids(){
 			if(fr_id===0){
 				chg_recs[(fr_id).toString()]=window.location.href;
 			}
-			initSetup();
+			//initSetup();
 			resolve();
 		});
 	});
@@ -1038,7 +1040,7 @@ doSort();
 }
 
 function checker(url, msg, fid){
-	if(cvsSel.selectedIndex==0){
+	if(typeof(cvsSel)!=='undefined' && cvsSel.selectedIndex==0){
 		to_draw.push([url, msg, fid]);
 	}else if((msg=="detect" || msg=="rqi") && fr_id==0 && cvsSel.selectedIndex>=1){
 				url=Array.from(new Set(url));
