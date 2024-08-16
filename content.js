@@ -289,15 +289,15 @@ function rsz(skp,iab){
 				if(t1>t2){
 					ifrm.style.setProperty('top','','important');
 				}
-				sch*=0.9964;
+				/*sch*=0.9964;
 				ifrm.style.setProperty('max-height',`${sch}px`,'important');
 				ifrm.style.setProperty('min-height',`${sch}px`,'important');
-				ifrm.style.setProperty('height',`${sch}px`,'important');
+				ifrm.style.setProperty('height',`${sch}px`,'important');*/
 				ifrm.contentWindow.document.body.style.overflow='scroll';
 			}else{
 				
-				ifrm.style.setProperty('max-height','','important');
-				ifrm.style.setProperty('min-height','','important');
+				/*ifrm.style.setProperty('max-height','','important');
+				ifrm.style.setProperty('min-height','','important');*/
 				//ifrm.style.setProperty('height','max-content');
 				ifrm.contentWindow.document.body.style.overflow='hidden';
 			}
@@ -324,6 +324,10 @@ function rsz(skp,iab){
 				igi.style.setProperty('zoom',s,'important' );
 			}
 		}
+		let ifh=ifrm.contentWindow.document.body.getBoundingClientRect().height+xtraBottom;
+		ifrm.style.setProperty('max-height',`${ifh}px`,'important');
+		ifrm.style.setProperty('min-height',`${ifh}px`,'important');
+		ifrm.style.setProperty('height',`${ifh}px`,'important');
 	}catch(e){;}
 }
 
@@ -440,7 +444,6 @@ function setup(){
 			cvsSel.selectedIndex=1;
 			cvsSct.style.setProperty( 'display', 'flex', 'important' );
 		}
-	ifrm.style.setProperty( 'height', 'max-content', 'important' );
 	 rsz(true);
 	 
 		if(resizeObserver===null){
@@ -457,7 +460,10 @@ function setup(){
 						let iab=(ifrm.getAttribute('isAboveBtm')=='true')?true:false;
 						rsz(false,iab);
 						if(!iab){
-							ifrm.style.setProperty('height',(entry.target.getBoundingClientRect().height+xtraBottom)+'px','important');
+							let nh=ifrm.contentWindow.document.body.getBoundingClientRect().height+xtraBottom;
+							ifrm.style.setProperty('max-height',(nh)+'px','important');
+							ifrm.style.setProperty('min-height',(nh)+'px','important');
+							ifrm.style.setProperty('height',(nh)+'px','important');
 						}
 					}
 				}
@@ -500,6 +506,9 @@ function initSetup(){
 		<style>
 		::-webkit-scrollbar {
 			display: none;
+		}
+		html{
+			min-height: max-content !important;
 		}
 		</style>
 		</head>
@@ -558,7 +567,7 @@ function initSetup(){
 					}
 				}
 				
-			if(abt===false){
+			if(abt===true){
 				ifrm.setAttribute('isAboveBtm','true');
 				ifrm.scrollIntoView({behavior: "instant", block: 'start', inline: 'start'});
 			}
