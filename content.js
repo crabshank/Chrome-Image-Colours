@@ -1051,12 +1051,12 @@ doSort();
 }
 
 function checker(url, msg, fid){
-	if(typeof(cvsSel)==='undefined'){
+	if(fr_id===0 && typeof(cvsSel)==='undefined'){
 		return;
 	}
-	if(cvsSel.selectedIndex==0){
+	if(cvsSel?.selectedIndex===0){
 		to_draw.push([url, msg, fid]);
-	}else if((msg=="detect" || msg=="rqi") && fr_id==0 && cvsSel.selectedIndex>=1){
+	}else if((msg=="detect" || msg=="rqi") && fr_id==0 && cvsSel?.selectedIndex>=1){
 				url=Array.from(new Set(url));
 				let cvsUrls=getMatchingNodesShadow(cvsSct,'IMG',true,false).map((i)=>{return i.getAttribute('og_url');});
 				let igs=getMatchingNodesShadow(document,'IMG',true,false);
