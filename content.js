@@ -567,7 +567,7 @@ function initSetup(){
 					}
 				}
 				
-			if(abt===true){
+			if(abt===false){
 				ifrm.setAttribute('isAboveBtm','true');
 				ifrm.scrollIntoView({behavior: "instant", block: 'start', inline: 'start'});
 			}
