@@ -15,6 +15,7 @@ var img_cnt_ro=0;
 var loadedURLs=[];
 var loadedToRemURLs={};
 var xtraBottom=5;
+var overflow_y_defaults=[];
 
 function removeEls(d, array) {
   var newArray = [];
@@ -331,7 +332,7 @@ function rsz(skp,iab){
 	}catch(e){;}
 }
 
-let ifrm, ht, style_tag, cvsSctTop, ctR, cvsSc, cvsClr, cvsSel, colNames;
+let ifrm, ht, style_tag, cvsSctTop, ctR, cvsSc, cvsClr, cvsSel, colNames,scrStyl;
 
 function deGreen(){
 	if(fr_id===0){
@@ -479,6 +480,12 @@ function setup(){
 function initSetup(){
 	if(fr_id==0){
 		
+		scrStyl=document.createElement('style');
+		document.head.insertAdjacentElement('afterbegin',scrStyl);
+		scrStyl.innerHTML=`::-webkit-scrollbar {
+			display: none !important;
+		}`;
+		
 		ifrm=document.createElement('iframe');
 		ifrm.style.setProperty( 'all', 'initial', 'important' );
 		ifrm.style.setProperty( 'pointer-events', 'none', 'important' );
@@ -497,6 +504,12 @@ function initSetup(){
 		ifrm.style.setProperty( '-webkit-user-select', 'none', 'important' );
 
 		document.body.insertAdjacentElement('beforeend',ifrm);
+		overflow_y_defaults=[window.getComputedStyle(document.documentElement)['overflow-y'], window.getComputedStyle(document.body)['overflow-y']];
+		scrStyl.innerHTML=`::-webkit-scrollbar {
+			display: none !important;
+		}`;
+		document.documentElement.style.setProperty('overflow-y','scroll','important');
+		document.body.style.setProperty('overflow-y','scroll','important');
 		//ifrm.src = "";
 
 		ht=`<html>
@@ -1196,8 +1209,17 @@ function gotMessage(message, sender, sendResponse) {
 		let d=window.getComputedStyle(ifrm)['visibility'];
 		if(d==='hidden'){
 			ifrm.style.setProperty('visibility','visible','important');
+			overflow_y_defaults=[window.getComputedStyle(document.documentElement)['overflow-y'], window.getComputedStyle(document.body)['overflow-y']];
+			scrStyl.innerHTML=`::-webkit-scrollbar {
+				display: none !important;
+			}`;
+			document.documentElement.style.setProperty('overflow-y','scroll','important');
+			document.body.style.setProperty('overflow-y','scroll','important');
 		}else{
 			ifrm.style.setProperty('visibility','hidden','important');
+			scrStyl.innerHTML='';
+			document.documentElement.style.setProperty('overflow-y',overflow_y_defaults[0],'important');
+			document.body.style.setProperty('overflow-y',overflow_y_defaults[1],'important');
 		}
 	}else if(message.message=="chg"){
 		let mfs=message.frs;
